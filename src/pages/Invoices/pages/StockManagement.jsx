@@ -293,6 +293,19 @@ const StockManagement = () => {
                 className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
+            <div className="mb-[0.3vw]">
+              <h1>Edit Approval Status:</h1>
+              <select
+                name="EditApprovalStatus"
+                value={formData.EditApprovalStatus}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              >
+                <option value="Complete">Complete</option>
+                <option value="Pending">Pending</option>
+                <option value="Delete">Delete</option>
+              </select>
+            </div>
             <button
               type="submit"
               className="bg-[#E9278E] mt-[0.5vw] text-white p-2 rounded w-full"
