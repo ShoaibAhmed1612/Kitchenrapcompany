@@ -191,7 +191,7 @@ const SalesGoal = () => {
               <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
               <th className="border p-[0.5vw] text-[1vw]">Booked Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Employee Name</th>
-              <th className='border p-[0.5vw] text-[1v2]'>Start Date</th>
+              <th className='border p-[0.5vw] text-[1vw]'>Start Date</th>
               <th className="border p-[0.5vw] text-[1vw]">End Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Total Collection</th>
               <th className="border p-[0.5vw] text-[1vw]">Total Commition</th>
