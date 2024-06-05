@@ -195,7 +195,7 @@ const InstallationSchedule = () => {
             <tr className="w-[80vw]">
               <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
               <th className="border p-[0.5vw] text-[1vw]">Entry Date</th>
-              <th className='border p-[0.5vw] text-[1v2]'>Job no</th>
+              <th className='border p-[0.5vw] text-[1vw]'>Job no</th>
               <th className="border p-[0.5vw] text-[1vw]">Customer Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Project Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Contract no</th>

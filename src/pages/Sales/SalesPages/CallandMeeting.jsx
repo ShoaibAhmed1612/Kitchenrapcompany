@@ -173,13 +173,13 @@ const CallandMeeting = () => {
             <option value="Inactive">Inactive</option>
           </select>
           <button className="w-[2vw] bg-orange-500 mx-[0.5vw] rounded-md" onClick={handleRefresh}>
-            <img src="public/HRM/refresh.png" alt="" />
+            <img src="/HRM/refresh.png" alt="" />
           </button>
           <button className="w-[2vw] bg-red-500 mx-[0.5vw] rounded-md" onClick={handleFilter}>
-            <img src="public/HRM/filter.png" alt="" />
+            <img src="/HRM/filter.png" alt="" />
           </button>
           <button className="w-[2vw] bg-sky-500 mx-[0.5vw] rounded-md" onClick={handleExport}>
-            <img src="public/HRM/export.png" alt="" />
+            <img src="/HRM/export.png" alt="" />
           </button>
         </div>
         <table className=" w-[80vw] ">
