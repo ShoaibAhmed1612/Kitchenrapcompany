@@ -67,9 +67,7 @@ import AccountTutorial from './pages/Account/pages/AccountTutorial';
 import Purchase from './pages/Invoices/pages/Purchase';
 import SalesInvoice from './pages/Invoices/pages/SalesInvoice';
 import WherehouseInvoice from './pages/Invoices/pages/WherehouseInvoice';
-import StockManagement from './pages/Invoices/pages/StockManagement';
 import InvoiceReport from './pages/Invoices/pages/InvoiceReport';
-import InvoiceTypes from './pages/Invoices/pages/InvoiceTypes';
 import InvoiceTutorial from './pages/Invoices/pages/InvoiceTutorial';
 import BreakdownProcess from './pages/Hierarchy/pages/BreakdownProcess';
 import ProductionApproval from './pages/Hierarchy/pages/ProductionApproval';
@@ -398,16 +396,8 @@ function App() {
       element: <><Header /><WherehouseInvoice /></>  ,
     },
     {
-      path: "/Invoice/StockManagement",
-      element: <><Header /><StockManagement /></>  ,
-    },
-    {
       path: "/Invoice/InvoiceReport",
       element: <><Header /><InvoiceReport /></>  ,
-    },
-    {
-      path: "/Invoice/InvoiceTypes",
-      element: <><Header /><InvoiceTypes /></>  ,
     },
     {
       path: "/Hierarchy/BreakdownProcess",

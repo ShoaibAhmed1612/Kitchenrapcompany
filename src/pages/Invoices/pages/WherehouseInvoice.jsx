@@ -176,7 +176,7 @@ const WherehouseInvoice = () => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+              <th className="border p-[0.5vw] text-[1vw]">SKU</th>
               <th className="border p-[0.5vw] text-[1vw]">Date Added</th>
               <th className="border p-[0.5vw] text-[1vw]">Warehouse</th>
               <th className="border p-[0.5vw] text-[1vw]">Voucher no</th>

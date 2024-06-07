@@ -6,7 +6,7 @@ const ProjectManager = () => {
     EntryDate: "",
     ProjectTitle: "",
     Releatedto: "",
-    CustomerLead: "",
+    Customer: "",
     Contentno: "",
     status: "",
   });
@@ -46,7 +46,7 @@ const ProjectManager = () => {
       EntryDate: formData.EntryDate,
       ProjectTitle: formData.ProjectTitle,
       Releatedto: formData.Releatedto,
-      CustomerLead: formData.CustomerLead,
+      Customer: formData.Customer,
       Contentno: formData.Contentno,
       status: formData.status,
     };
@@ -80,7 +80,7 @@ const ProjectManager = () => {
       EntryDate: "",
       ProjectTitle: "",
       Releatedto: "",
-      CustomerLead: "",
+      Customer: "",
       Contentno: "",
       status: "",
     });
@@ -194,11 +194,11 @@ const ProjectManager = () => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Project no</th>
               <th className="border p-[0.5vw] text-[1vw]">Entry Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Project Title</th>
               <th className="border p-[0.5vw] text-[1vw]">Releated to</th>
-              <th className="border p-[0.5vw] text-[1vw]">Customer/Lead</th>
+              <th className="border p-[0.5vw] text-[1vw]">Customer</th>
               <th className="border p-[0.5vw] text-[1vw]">Content no</th>
               <th className="border p-[0.5vw] text-[1vw]">Status</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
@@ -303,13 +303,13 @@ const ProjectManager = () => {
             </div>
             <div className="mb-[0.3vw]">
               <label htmlFor="CustomerLead" className="block mb-1">
-                Customer/Lead:
+                Customer name:
               </label>
               <input
                 type="text"
                 id="CustomerLead"
                 name="CustomerLead"
-                value={formData.CustomerLead}
+                value={formData.Customer}
                 onChange={handleChange}
                 className="p-[1vw] text-[1vw] w-[13vw] rounded-md border"
               />
@@ -346,7 +346,7 @@ const ProjectManager = () => {
               type="submit"
               className="bg-[#E9278E] text-white p-2 rounded w-full"
             >
-              {editIndex !== null ? "Edit Employee" : "Add Employee"}
+              {editIndex !== null ? "Edit " : "Add "}
             </button>
           </form>
         </div>

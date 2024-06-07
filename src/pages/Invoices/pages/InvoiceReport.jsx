@@ -190,7 +190,7 @@ const InvoiceReport = () => {
       <table className="w-[80vw] overflow-y-auto">
         <thead className="bg-gray-300 w-[80vw]">
           <tr className="w-[80vw]">
-            <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+            <th className="border p-[0.5vw] text-[1vw]">Item no</th>
             <th className="border p-[0.5vw] text-[1vw]">Invoice Date</th>
             <th className="border p-[0.5vw] text-[1vw]">Customer/Supplier</th>
             <th className="border p-[0.5vw] text-[1vw]">Invoice Type</th>

@@ -576,21 +576,9 @@ const Header = () => {
                   </Link>
                 </li>
                 <li className="py-[0.3vw] my-[0.2vw]">
-                  <Link to="/Invoice/StockManagement" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/Invoice/StockManagement" )}`}>
-                    <img src="/invoice/stock.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
-                    <h1> Stock Management</h1>
-                  </Link>
-                </li>
-                <li className="py-[0.3vw] my-[0.2vw]">
                   <Link to="/Invoice/InvoiceReport" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/Invoice/InvoiceReport" )}`}>
                     <img src="/invoice/reprt.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
                     <h1>Invoice Report</h1>
-                  </Link>
-                </li>
-                <li className="py-[0.3vw] my-[0.2vw]">
-                  <Link to="/Invoice/InvoiceTypes" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/Invoice/InvoiceTypes" )}`}>
-                    <img src="/invoice/types.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
-                    <h1>Invoice Types</h1>
                   </Link>
                 </li>
                 <li className="py-[0.3vw] my-[0.2vw]">
