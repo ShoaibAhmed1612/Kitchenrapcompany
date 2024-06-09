@@ -152,6 +152,19 @@ const InstallationSchedule = () => {
     }
   });
   
+  const getStatusColor = (status) => {
+    switch (status) {
+      case 'Pending':
+        return 'yellow';
+      case 'Cancel':
+        return 'red';
+      case 'Complete':
+        return 'green';
+      default:
+        return 'transparent'; // Default background color
+    }
+  };
+  
 
 
   return (
@@ -218,7 +231,10 @@ const InstallationSchedule = () => {
                 <td className="p-[1.5vw]">{row.JobType}</td>
                 <td className="p-[1.5vw]">{row.InstallationDate}</td>
                 <td className="p-[1.5vw]">{row.Notes}</td>
-                <td className="p-[1.5vw]">{row.status}</td>
+                <td className="p-[1.5vw]" style={{ backgroundColor: getStatusColor(row.status) }}>
+  {row.status}
+</td>
+
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -373,8 +389,9 @@ const InstallationSchedule = () => {
                 value={formData.status}
                 onChange={handleChange}
               >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="Cancel">Cancel</option>
+                <option value="Pending">Pending</option>
+                <option value="Complete">Complete</option>
               </select>
             </div>
             <button

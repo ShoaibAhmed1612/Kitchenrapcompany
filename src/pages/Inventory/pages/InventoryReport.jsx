@@ -12,6 +12,7 @@ const InventoryReport = () => {
           SKU: "",
           Barcode: "",
           Productname: "",
+          Stock: 0,
         };
   });
 
@@ -27,6 +28,7 @@ const InventoryReport = () => {
   });
   const [searchTerm, setSearchTerm] = useState('');
   const [filter, setFilter] = useState('All');
+  const [projectArea, setProjectArea] = useState(0);
 
   useEffect(() => {
     localStorage.setItem('formData', JSON.stringify(formData));
@@ -44,6 +46,7 @@ const InventoryReport = () => {
     const newEmployee = {
       id: srNo,
       ...formData,
+      Stock: parseFloat(formData.Stock),
     };
     setRows([...rows, newEmployee]);
     setSrNo(srNo + 1);
@@ -53,6 +56,7 @@ const InventoryReport = () => {
       SKU: "",
       Barcode: "",
       Productname: "",
+      Stock: 0,
     });
   };
 
@@ -70,7 +74,7 @@ const InventoryReport = () => {
     if (editIndex !== null) {
       setRows((prevRows) => {
         const updatedRows = [...prevRows];
-        updatedRows[editIndex] = { id: rows[editIndex].id, ...formData };
+        updatedRows[editIndex] = { id: rows[editIndex].id, ...formData, Stock: parseFloat(formData.Stock) };
         return updatedRows;
       });
       setEditIndex(null);
@@ -116,6 +120,36 @@ const InventoryReport = () => {
     setSearchTerm(e.target.value);
   };
 
+  const calculateMaterials = (projectArea) => {
+    const requiredMeters = projectArea + (projectArea * 0.35);
+    return Math.ceil(requiredMeters);
+  };
+
+  const handlePlaceOrder = () => {
+    const requiredMeters = calculateMaterials(projectArea);
+
+    rows.forEach((row, index) => {
+      if (row.Category === "Project A" && row.Productname === "kitchen measurements") {
+        const currentStock = row.Stock;
+        const toOrder = requiredMeters - currentStock;
+
+        if (toOrder > 0) {
+          console.log(`Order ${toOrder} meters of ${row.Productname}`);
+        } else {
+          console.log(`Reserve ${requiredMeters} meters from stock for ${row.Productname}`);
+        }
+
+        const updatedStock = currentStock >= requiredMeters ? currentStock - requiredMeters : 0;
+        const updatedRow = { ...row, Stock: updatedStock };
+        setRows((prevRows) => {
+          const updatedRows = [...prevRows];
+          updatedRows[index] = updatedRow;
+          return updatedRows;
+        });
+      }
+    });
+  };
+
   const filteredRows = rows.filter((row) => {
     const Category = row.Category ? row.Category.toLowerCase() : '';
     const SubCategory = row.SubCategory ? row.SubCategory.toLowerCase() : '';
@@ -123,7 +157,6 @@ const InventoryReport = () => {
     if (filter === 'All') {
       return Category.includes(searchTerm.toLowerCase());
     } else {
-      // Add status check for filtered search
       return (
         row.status.toLowerCase() === filter.toLowerCase() &&
         Category.includes(searchTerm.toLowerCase())
@@ -133,11 +166,11 @@ const InventoryReport = () => {
 
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-    <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-      <div className='w-[3vw]'>
-      <img src="/Inventory/report.png" className="image-hover-effect" alt="Leave" />
-      </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>inventory Report</h1>
+      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
+        <div className='w-[3vw]'>
+          <img src="/Inventory/report.png" className="image-hover-effect" alt="Leave" />
+        </div>
+        <h1 className=' text-[2vw] text-[#E9278E]'>Inventory Report</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
@@ -184,6 +217,10 @@ const InventoryReport = () => {
               <th className="border p-[0.5vw] text-[1vw]">SKU</th>
               <th className="border p-[0.5vw] text-[1vw]">Barcode</th>
               <th className="border p-[0.5vw] text-[1vw]">Product Name</th>
+              <th className="border p-[0.5vw] text-[1vw]">Length (m)</th>
+              <th className="border p-[0.5vw] text-[1vw]">Width (m)</th>
+              <th className="border p-[0.5vw] text-[1vw]">Area (m²)</th>
+              <th className="border p-[0.5vw] text-[1vw]">Stock</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
@@ -196,6 +233,10 @@ const InventoryReport = () => {
                 <td>{row.SKU}</td>
                 <td>{row.Barcode}</td>
                 <td>{row.Productname}</td>
+                <td>{row.Length}</td>
+                <td>{row.Width}</td>
+                <td>{row.Length * row.Width}</td>
+                <td>{row.Stock}</td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -234,20 +275,19 @@ const InventoryReport = () => {
               <img src="/HRM/close.png" className="w-[2vw]" alt="" />
             </button>
           </div>
-          <form onSubmit={handleSubmit} className="overflow-y-auto  p-[1vw] ">
+          <form onSubmit={handleSubmit} className="overflow-y-auto p-[1vw]">
             <div className="mb-[0.3vw]">
-            Category Name:
+              <label>Category Name:</label>
               <input
                 type="text"
                 name="Category"
                 value={formData.Category}
                 onChange={handleChange}
                 className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
-                
               />
             </div>
             <div className="mb-[0.3vw]">
-            Sub-Category Name
+              <label>Sub-Category Name:</label>
               <input
                 type="text"
                 name="SubCategory"
@@ -257,7 +297,7 @@ const InventoryReport = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-            SKU Number:
+              <label>SKU Number:</label>
               <input
                 type="text"
                 name="SKU"
@@ -267,7 +307,7 @@ const InventoryReport = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-            Barcode Number:
+              <label>Barcode Number:</label>
               <input
                 type="text"
                 name="Barcode"
@@ -277,7 +317,7 @@ const InventoryReport = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-            Product Name:
+              <label>Product Name:</label>
               <input
                 type="text"
                 name="Productname"
@@ -286,7 +326,46 @@ const InventoryReport = () => {
                 className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
-            
+            <div className="mb-[0.3vw]">
+              <label>Stock:</label>
+              <input
+                type="number"
+                name="Stock"
+                value={formData.Stock}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label>Length (m):</label>
+              <input
+                type="number"
+                name="Length"
+                value={formData.Length}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label>Width (m):</label>
+              <input
+                type="number"
+                name="Width"
+                value={formData.Width}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label>Area (m²):</label>
+              <input
+                type="number"
+                name="Area"
+                value={formData.Length * formData.Width}
+                readOnly
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+            </div>
             <button
               type="submit"
               className="bg-[#E9278E] mt-[0.5vw] text-white p-2 rounded w-full"

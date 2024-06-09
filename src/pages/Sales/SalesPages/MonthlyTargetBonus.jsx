@@ -1,17 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { jsPDF } from 'jspdf';
 
-const MonthlyTargetBonus = () => {
+const BiWeeklyWagesSchedule = () => {
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem('formData');
     return savedData ? JSON.parse(savedData) : {
       AddedDate: "",
-      BranchName: '',
-      Month: '',
-      Department: '',
-      Target: '',
-      Bonus: '',
-      TargetReached: '',
+      EmployeeName: '',
+      ProjectNumber: '',
+      EmployeeNumber: '',
+      SquaresCompleted: '',
+      RatePerSquare: '',
       status: '',
     };
   });
@@ -41,15 +40,6 @@ const MonthlyTargetBonus = () => {
     localStorage.setItem('srNo', srNo.toString());
   }, [srNo]);
 
-  const addEmployee = () => {
-    const newEmployee = {
-      id: srNo,
-      name: `Employee ${srNo}`,
-    };
-    setRows([...rows, newEmployee]);
-    setSrNo(srNo + 1);
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -74,12 +64,11 @@ const MonthlyTargetBonus = () => {
 
     setFormData({
       AddedDate: "",
-      BranchName: '',
-      Month: '',
-      Department: '',
-      Target: '',
-      Bonus: '',
-      TargetReached: '',
+      EmployeeName: '',
+      ProjectNumber: '',
+      EmployeeNumber: '',
+      SquaresCompleted: '',
+      RatePerSquare: '',
       status: '',
     });
 
@@ -117,9 +106,9 @@ const MonthlyTargetBonus = () => {
     const doc = new jsPDF();
     rows.forEach((row, index) => {
       const yPos = 10 + (index * 10);
-      doc.text(`${row.name} - ${row.code}`, 10, yPos);
+      doc.text(`${row.EmployeeName} - ${row.ProjectNumber}`, 10, yPos);
     });
-    doc.save('employee_table.pdf');
+    doc.save('bi_weekly_wages_schedule.pdf');
   };
 
   const handleSearch = (e) => {
@@ -127,7 +116,7 @@ const MonthlyTargetBonus = () => {
   };
 
   const filteredRows = rows.filter((row) => {
-    const name = row.name ? row.name.toLowerCase() : '';
+    const name = row.EmployeeName ? row.EmployeeName.toLowerCase() : '';
     const status = row.status ? row.status.toLowerCase() : '';
   
     if (filter === 'All') {
@@ -146,7 +135,7 @@ const MonthlyTargetBonus = () => {
       <div className='w-[3vw]'>
       <img src="/Sales/Salespages/Monthly.png" className="image-hover-effect" alt="Leave" />
       </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>Monthly Target Bonus</h1>
+      <h1 className=' text-[2vw] text-[#E9278E]'>Bi-weekly Wages Schedule</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center"> 
@@ -181,12 +170,11 @@ const MonthlyTargetBonus = () => {
             <tr className="w-[80vw]">
               <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
               <th className="border p-[0.5vw] text-[1vw]">Added Date</th>
-              <th className="border p-[0.5vw] text-[1vw]">Branch Name</th>
-              <th className="border p-[0.5vw] text-[1vw]">Month</th>
-              <th className="border p-[0.5vw] text-[1vw]">Department</th>
-              <th className="border p-[0.5vw] text-[1vw]">Target</th>
-              <th className="border p-[0.5vw] text-[1vw]">Bonus</th>
-              <th className="border p-[0.5vw] text-[1vw]">Target Reached</th>
+              <th className="border p-[0.5vw] text-[1vw]">Employee Name</th>
+              <th className="border p-[0.5vw] text-[1vw]">Project Number</th>
+              <th className="border p-[0.5vw] text-[1vw]">Employee Number</th>
+              <th className="border p-[0.5vw] text-[1vw]">Squares Completed</th>
+              <th className="border p-[0.5vw] text-[1vw]">Rate Per Square</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
@@ -195,12 +183,11 @@ const MonthlyTargetBonus = () => {
               <tr key={index}>
                 <td>{index + 1}</td>
                 <td>{row.AddedDate}</td>
-                <td>{row.BranchName}</td>
-                <td>{row.Month}</td>
-                <td>{row.Department}</td>
-                <td>{row.Target}</td>
-                <td>{row.Bonus}</td>
-                <td>{row.TargetReached}</td>
+                <td>{row.EmployeeName}</td>
+                <td>{row.ProjectNumber}</td>
+                <td>{row.EmployeeNumber}</td>
+                <td>{row.SquaresCompleted}</td>
+                <td>{row.RatePerSquare}</td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -250,60 +237,51 @@ const MonthlyTargetBonus = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-            <h1>Branch name:</h1>
+            <h1>Employee name:</h1>
               <input
                 type="text"
-                name="BranchName"
-                value={formData.BranchName}
+                name="EmployeeName"
+                value={formData.EmployeeName}
                 onChange={handleChange}
                 className='border border-black p-[0.3vw] rounded-md w-[20vw]'
               />
             </div>
             <div className="mb-[0.3vw]">
-              <h1>Month name:</h1>
+              <h1>Project number:</h1>
               <input
-                name="Month"
-                value={formData.Month}
+                type="text"
+                name="ProjectNumber"
+                value={formData.ProjectNumber}
                 onChange={handleChange}
                 className='border border-black p-[0.3vw] rounded-md w-[20vw]'
               />
             </div>
             <div className="mb-[0.3vw]">
-            <h1>Department name:</h1>
+            <h1>Employee number:</h1>
               <input
                 type="text"
-                name="Department"
-                value={formData.Department}
+                name="EmployeeNumber"
+                value={formData.EmployeeNumber}
                 onChange={handleChange}
                 className='border border-black p-[0.3vw] rounded-md w-[20vw]'
               />
             </div>
             <div className="mb-[0.3vw]">
-            <h1>Target:</h1>
+            <h1>Squares Completed:</h1>
               <input
                 type="text"
-                name="Target"
-                value={formData.Target}
+                name="SquaresCompleted"
+                value={formData.SquaresCompleted}
                 onChange={handleChange}
                 className='border border-black p-[0.3vw] rounded-md w-[20vw]'
               />
             </div>
             <div className="mb-[0.3vw]">
-            <h1>Bonus:</h1>
+            <h1>Rate Per Square:</h1>
               <input
                 type="text"
-                name="Bonus"
-                value={formData.Bonus}
-                onChange={handleChange}
-                className='border border-black p-[0.3vw] rounded-md w-[20vw]'
-              />
-            </div>
-            <div className="mb-[0.3vw]">
-            <h1>Target Reached:</h1>
-              <input
-                type="text"
-                name="TargetReached"
-                value={formData.TargetReached}
+                name="RatePerSquare"
+                value={formData.RatePerSquare}
                 onChange={handleChange}
                 className='border border-black p-[0.3vw] rounded-md w-[20vw]'
               />
@@ -321,4 +299,4 @@ const MonthlyTargetBonus = () => {
   )
 }
 
-export default MonthlyTargetBonus;
+export default BiWeeklyWagesSchedule;

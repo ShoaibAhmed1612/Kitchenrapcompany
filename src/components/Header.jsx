@@ -290,7 +290,7 @@ const Header = () => {
                 <li className="py-[0.3vw] my-[0.2vw]">
                   <Link to="/Sales/CallandMeeting" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/Sales/CallandMeeting" )}`}>
                     <img src="/Sales/Salespages/Callmeeting.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
-                    <h1>Call and Meeting</h1>
+                    <h1>Site Visit</h1>
                   </Link>
                 </li>
                 <li className="py-[0.3vw] my-[0.2vw]">
@@ -320,7 +320,7 @@ const Header = () => {
                 <li className="py-[0.3vw] my-[0.2vw]">
                   <Link to="/Sales/MonthlyTargetBonus" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/Sales/MonthlyTargetBonus" )}`}>
                     <img src="/Sales/Salespages/Monthly.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
-                    <h1>Monthly Target Bonus</h1>
+                    <h1>Bi-weekly Wages Schedule</h1>
                   </Link>
                 </li>
                 <li className="py-[0.3vw] my-[0.2vw]">
@@ -404,7 +404,7 @@ const Header = () => {
                 <li className="py-[0.3vw] my-[0.2vw]">
                   <Link to="/Inventory/Products" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/Inventory/Products" )}`}>
                     <img src="/Inventory/product.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
-                    <h1>Products</h1>
+                    <h1>Live Inventory</h1>
                   </Link>
                 </li>
                 <li className="py-[0.3vw] my-[0.2vw]">

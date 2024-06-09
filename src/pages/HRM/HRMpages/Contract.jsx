@@ -16,6 +16,9 @@ const Contract = () => {
           shift: "",
           department: "",
           status: "",
+          contract: "",
+          medicalFitnessCertificate: "",
+          resume: "",
         };
   });
 
@@ -66,19 +69,19 @@ const Contract = () => {
     setFormData({ ...formData, expiryDate: e.target.value });
   };
 
-  const handleChange = (e, day, index) => {
-    const { value } = e.target;
-    setRows((prevRows) =>
-      prevRows.map((row, i) =>
-        i === index ? { ...row, [`${day}Time`]: value } : row
-      )
-    );
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
   const handleFileChange = (e) => {
+    const { name, files } = e.target;
     setFormData((prevData) => ({
       ...prevData,
-      profilePic: e.target.files[0],
+      [name]: URL.createObjectURL(files[0]),
     }));
   };
 
@@ -98,14 +101,17 @@ const Contract = () => {
 
     setFormData({
       profilePic: "",
-          name: "",
-          job: "",
-          code: "",
-          issueDate: "",
-          expiryDate: "",
-          shift: "",
-          department: "",
-          status: "",
+      name: "",
+      job: "",
+      code: "",
+      issueDate: "",
+      expiryDate: "",
+      shift: "",
+      department: "",
+      status: "",
+      contract: "",
+      medicalFitnessCertificate: "",
+      resume: "",
     });
 
     setFormVisible(false);
@@ -166,7 +172,6 @@ const Contract = () => {
       );
     }
   });
-  
   return (
     <div className="absolute shadow-xl right-[1vw]  rounded-md top-[12vw] h-[33vw]">
       <div className="h-[50vw]">
@@ -217,6 +222,9 @@ const Contract = () => {
               <th className="border p-[0.5vw] text-[1vw]">Shift</th>
               <th className="border p-[0.5vw] text-[1vw]">Contract Type</th>
               <th className="border p-[0.5vw] text-[1vw]">File no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Contract</th>
+              <th className="border p-[0.5vw] text-[1vw]">Medical</th>
+              <th className="border p-[0.5vw] text-[1vw]">Fitness</th>
               <th className="border p-[0.5vw] text-[1vw]">Status</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
@@ -245,6 +253,21 @@ const Contract = () => {
                 <td className="p-[1.5vw]">{row.department}</td>
                 <td className="p-[1.5vw]">{row.code}</td>
                 <td>{row.status}</td>
+                <td className="p-[1.5vw]">
+                  {row.contract && (
+                    <a href={row.contract} target="_blank" rel="noopener noreferrer">View Contract</a>
+                  )}
+                </td>
+                <td className="p-[1.5vw]">
+                  {row.medicalFitnessCertificate && (
+                    <a href={row.medicalFitnessCertificate} target="_blank" rel="noopener noreferrer">View Certificate</a>
+                  )}
+                </td>
+                <td className="p-[1.5vw]">
+                  {row.resume && (
+                    <a href={row.resume} target="_blank" rel="noopener noreferrer">View Resume</a>
+                  )}
+                </td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -407,6 +430,45 @@ const Contract = () => {
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
               </select>
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="contract" className="block mb-1">
+                Contract:
+              </label>
+              <input
+                type="file"
+                id="contract"
+                name="contract"
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="medicalFitnessCertificate" className="block mb-1">
+                Medical Fitness Certificate:
+              </label>
+              <input
+                type="file"
+                id="medicalFitnessCertificate"
+                name="medicalFitnessCertificate"
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="resume" className="block mb-1">
+                Resume:
+              </label>
+              <input
+                type="file"
+                id="resume"
+                name="resume"
+                accept=".pdf,.doc,.docx"
+                onChange={handleFileChange}
+                className="border p-2 rounded w-full"
+              />
             </div>
             <button
               type="submit"

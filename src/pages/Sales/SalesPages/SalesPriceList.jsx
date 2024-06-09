@@ -180,7 +180,7 @@ const SalesPriceList = () => {
                 <table className="w-[80vw] overflow-y-auto">
                     <thead className="bg-gray-300 w-[80vw]">
                         <tr className="w-[80vw]">
-                            <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+                            <th className="border p-[0.5vw] text-[1vw]">SKU no</th>
                             <th className="border p-[0.5vw] text-[1vw]">Entry Date</th>
                             <th className="border p-[0.5vw] text-[1vw]">Main Item</th>
                             <th className="border p-[0.5vw] text-[1vw]">Item Size</th>

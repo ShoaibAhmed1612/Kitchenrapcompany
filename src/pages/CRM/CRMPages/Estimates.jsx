@@ -6,23 +6,29 @@ const Estimates = () => {
     EntryDate: "",
     Estimate: "",
     Customer: "",
+    Description: "",
     Total: "",
     EstimateDate: "",
     DueDate: "",
-    status: "",
+    status: "Active", // Default status
   });
 
   const [isFormVisible, setFormVisible] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
-  const [srNo, setSrNo] = useState(1);
+  const [rfqNo, setRfqNo] = useState(1); // Changed from srNo to rfqNo
   const [rows, setRows] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
   const [filter, setFilter] = useState("All");
 
   useEffect(() => {
-    const savedData = localStorage.getItem("formData");
+    const savedData = JSON.parse(localStorage.getItem("formData"));
     if (savedData) {
-      setFormData(JSON.parse(savedData));
+      setFormData(savedData);
+    }
+    
+    const savedRows = JSON.parse(localStorage.getItem("rows"));
+    if (savedRows) {
+      setRows(savedRows);
     }
   }, []);
 
@@ -31,29 +37,52 @@ const Estimates = () => {
   }, [formData]);
 
   useEffect(() => {
-    const savedRows = localStorage.getItem("rows");
-    if (savedRows) {
-      setRows(JSON.parse(savedRows));
-    }
-  }, []);
-
-  useEffect(() => {
     localStorage.setItem("rows", JSON.stringify(rows));
   }, [rows]);
 
-  const addEmployee = () => {
-    const newEmployee = {
-      id: srNo,
+  useEffect(() => {
+    const processRowData = (rowData) => {
+      // Logic to process the received rowData
+      console.log("Received Row Data:", rowData);
+      // For example, update the form data with the received data
+      setFormData({
+        ...formData,
+        EntryDate: rowData.EntryDate,
+        Estimate: rowData.Estimate,
+        Customer: rowData.Customer,
+        Description: rowData.Description,
+        Total: rowData.Total,
+        EstimateDate: rowData.EstimateDate,
+        // Set other properties accordingly
+      });
+    };
+  
+    if (location.state && location.state.leadData) {
+      const rowData = location.state.leadData;
+      processRowData(rowData);
+    }
+  }, [location.state]);
+  
+  
+
+  const addEstimate = () => {
+    const dueDate = new Date();
+    dueDate.setDate(dueDate.getDate() + 14); // Due date is 14 days from now
+
+    const newEstimate = {
+      rfqNo,
       EntryDate: formData.EntryDate,
       Estimate: formData.Estimate,
       Customer: formData.Customer,
+      Description: formData.Description,
       Total: formData.Total,
       EstimateDate: formData.EstimateDate,
-      DueDate: formData.DueDate,
+      DueDate: dueDate.toLocaleDateString("en-US"), // Format due date
       status: formData.status,
     };
-    setRows([...rows, newEmployee]);
-    setSrNo(srNo + 1);
+
+    setRows([...rows, newEstimate]);
+    setRfqNo(rfqNo + 1);
   };
 
   const handleChange = (e) => {
@@ -75,17 +104,18 @@ const Estimates = () => {
       });
       setEditIndex(null);
     } else {
-      addEmployee();
+      addEstimate();
     }
 
     setFormData({
       EntryDate: "",
       Estimate: "",
       Customer: "",
+      Description: "",
       Total: "",
       EstimateDate: "",
       DueDate: "",
-      status: "",
+      status: "Active", // Reset status to default after submission
     });
 
     setFormVisible(false);
@@ -96,8 +126,8 @@ const Estimates = () => {
   };
 
   const handleEdit = (index) => {
-    const employeeToEdit = rows[index];
-    setFormData(employeeToEdit);
+    const estimateToEdit = rows[index];
+    setFormData(estimateToEdit);
     setEditIndex(index);
     setFormVisible(true);
   };
@@ -111,11 +141,7 @@ const Estimates = () => {
   };
 
   const handleFilter = () => {
-    if (filter === "Active") {
-      setRows((prevRows) => prevRows.filter((row) => row.status === "Active"));
-    } else if (filter === "Inactive") {
-      setRows((prevRows) => prevRows.filter((row) => row.status === "Inactive"));
-    }
+    // Filtering is done on the client-side, no need to modify rows state
   };
 
   const handleExport = () => {
@@ -124,7 +150,7 @@ const Estimates = () => {
       const yPos = 10 + index * 10;
       doc.text(`${row.Customer} - ${row.status}`, 10, yPos);
     });
-    doc.save("employee_table.pdf");
+    doc.save("estimate_table.pdf");
   };
 
   const handleSearch = (e) => {
@@ -147,13 +173,15 @@ const Estimates = () => {
     }
   });
 
+  
+
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-    <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-      <div className='w-[3vw]'>
-      <img src="/CRM/pages/Estimates.png" className="image-hover-effect" alt="Leave" />
-      </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>Estimates</h1>
+      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
+        <div className='w-[3vw]'>
+          <img src="/CRM/pages/Estimates.png" className="image-hover-effect" alt="Estimates" />
+        </div>
+        <h1 className='text-[2vw] text-[#E9278E]'>Estimates</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row overflow-y-auto px-[2vw] items-center">
@@ -177,28 +205,29 @@ const Estimates = () => {
             className="w-[2vw] bg-orange-500 mx-[0.5vw] rounded-md"
             onClick={handleRefresh}
           >
-           <img src="/HRM/refresh.png" alt="" />
+            <img src="/HRM/refresh.png" alt="Refresh" />
           </button>
           <button
             className="w-[2vw] bg-red-500 mx-[0.5vw] rounded-md"
             onClick={handleFilter}
           >
-             <img src="/HRM/filter.png" alt="" />
+            <img src="/HRM/filter.png" alt="Filter" />
           </button>
           <button
             className="w-[2vw] bg-sky-500 mx-[0.5vw] rounded-md"
             onClick={handleExport}
           >
-            <img src="/HRM/export.png" alt="" />
+            <img src="/HRM/export.png" alt="Export" />
           </button>
         </div>
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+              <th className="border p-[0.5vw] text-[1vw]">RFQ No</th>
               <th className="border p-[0.5vw] text-[1vw]">Entry Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Estimate #</th>
-              <th className="border p-[0.5vw] text-[1vw]">Customer/Lead</th>
+              <th className="border p-[0.5vw]">Customer/Lead</th>
+              <th className="border p-[0.5vw] text-[1vw]">Description</th>
               <th className="border p-[0.5vw] text-[1vw]">Total</th>
               <th className="border p-[0.5vw] text-[1vw]">Estimate Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Due Date</th>
@@ -209,10 +238,11 @@ const Estimates = () => {
           <tbody className="rounded-lg bg-gray-100 w-[80vw] text-center">
             {filteredRows.map((row, index) => (
               <tr key={index}>
-                <td>{index + 1}</td>
+                <td>{row.rfqNo}</td>
                 <td>{row.EntryDate}</td>
                 <td>{row.Estimate}</td>
                 <td>{row.Customer}</td>
+                <td>{row.Description}</td>
                 <td>{row.Total}</td>
                 <td>{row.EstimateDate}</td>
                 <td>{row.DueDate}</td>
@@ -222,13 +252,13 @@ const Estimates = () => {
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
                     onClick={() => handleEdit(index)}
                   >
-                    <img src="/HRM/edit.png" className="w-[1.4vw]" alt="" />
+                    <img src="/HRM/edit.png" className="w-[1.4vw]" alt="Edit" />
                   </button>
                   <button
                     className="hover:bg-red-500 p-2 rounded-full"
                     onClick={() => handleDelete(index)}
                   >
-                    <img src="/HRM/Trash.png" className="w-[1.4vw]" alt=""/>
+                    <img src="/HRM/Trash.png" className="w-[1.4vw]" alt="Delete"/>
                   </button>
                 </td>
               </tr>
@@ -236,14 +266,13 @@ const Estimates = () => {
           </tbody>
         </table>
       </div>
-
       {!isFormVisible && (
         <div className="absolute bottom-4 left-4">
           <button
             className="w-[4vw] text-white p-2 rounded"
             onClick={toggleFormVisibility}
           >
-            <img src="/HRM/form.png" alt="" />
+            <img src="/HRM/form.png" alt="Add Estimate" />
           </button>
         </div>
       )}
@@ -252,15 +281,14 @@ const Estimates = () => {
         <div className="w-[30vw] bg-white shadow-lg absolute right-0 z-10 top-0 overflow-y-auto rounded-lg ml-4 h-[35vw]">
           <div className="flex justify-between p-4">
             <button
-             className="hover:bg-red-500  bg-white shadow-lg rounded-[0.7vw] text-white p-[1vw]"
+              className="hover:bg-red-500  bg-white shadow-lg rounded-[0.7vw] text-white p-[1vw]"
               onClick={toggleFormVisibility}
             >
-              <img src="/HRM/close.png" className="w-[1.4vw]" alt="" />
+              <img src="/HRM/close.png" className="w-[1.4vw]" alt="Close Form" />
             </button>
           </div>
           <form onSubmit={handleSubmit} className="overflow-y-auto p-[1vw] ">
             <div className="mb-[0.3vw]">
-              {/* Entry Date input field */}
               <label htmlFor="EntryDate" className="block mb-1">
                 Entry Date:
               </label>
@@ -275,7 +303,6 @@ const Estimates = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Estimate Number input field */}
               <label htmlFor="Estimate" className="block mb-1">
                 Estimate #:
               </label>
@@ -289,7 +316,6 @@ const Estimates = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Customer/Lead input field */}
               <label htmlFor="Customer" className="block mb-1">
                 Customer/Lead:
               </label>
@@ -303,7 +329,19 @@ const Estimates = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Total input field */}
+              <label htmlFor="Description" className="block mb-1">
+                Description:
+              </label>
+              <input
+                type="text"
+                id="Description"
+                name="Description"
+                value={formData.Description}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
               <label htmlFor="Total" className="block mb-1">
                 Total:
               </label>
@@ -317,7 +355,6 @@ const Estimates = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Estimate Date input field */}
               <label htmlFor="EstimateDate" className="block mb-1">
                 Estimate Date:
               </label>
@@ -332,22 +369,6 @@ const Estimates = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Due Date input field */}
-              <label htmlFor="DueDate" className="block mb-1">
-                Due Date:
-              </label>
-              <input
-                type="date"
-                id="DueDate"
-                name="DueDate"
-                value={formData.DueDate}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-                placeholder="MM/DD/YYYY"
-              />
-            </div>
-            <div className="mb-[0.3vw]">
-              {/* Status input field */}
               <label htmlFor="status" className="block mb-1">
                 Status:
               </label>
@@ -376,3 +397,4 @@ const Estimates = () => {
 };
 
 export default Estimates;
+

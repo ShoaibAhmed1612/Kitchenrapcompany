@@ -11,34 +11,40 @@ const DesignerActivities = () => {
       CustomerName: '',
       StartTime: '',
       status: '',
+      length: '',
+      width: '',
+      material: '',
+      distance: '',
+      quote: '',
+      profilePic: '',
+      sketch: '',
     };
   });
 
-const [isFormVisible, setFormVisible] = useState(false);
-const [editIndex, setEditIndex] = useState(null);
-const [srNo, setSrNo] = useState(() => {
-const savedSrNo = localStorage.getItem('srNo');
-return savedSrNo ? parseInt(savedSrNo) : 1;
-});
-const [rows, setRows] = useState(() => {
-const savedRows = localStorage.getItem('rows');
-return savedRows ? JSON.parse(savedRows) : [];
-});
-const [searchTerm, setSearchTerm] = useState('');
-const [filter, setFilter] = useState('All');
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [srNo, setSrNo] = useState(() => {
+    const savedSrNo = localStorage.getItem('srNo');
+    return savedSrNo ? parseInt(savedSrNo) : 1;
+  });
+  const [rows, setRows] = useState(() => {
+    const savedRows = localStorage.getItem('rows');
+    return savedRows ? JSON.parse(savedRows) : [];
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('All');
 
-useEffect(() => {
-localStorage.setItem('formData', JSON.stringify(formData));
-}, [formData]);
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
 
-useEffect(() => {
-localStorage.setItem('rows', JSON.stringify(rows));
-}, [rows]);
+  useEffect(() => {
+    localStorage.setItem('rows', JSON.stringify(rows));
+  }, [rows]);
 
-useEffect(() => {
-localStorage.setItem('srNo', srNo.toString());
-}, [srNo]);
-
+  useEffect(() => {
+    localStorage.setItem('srNo', srNo.toString());
+  }, [srNo]);
 
   const addEmployee = () => {
     const newEmployee = {
@@ -64,28 +70,46 @@ localStorage.setItem('srNo', srNo.toString());
     }));
   };
 
+  const handleSketchChange = (e) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      sketch: e.target.files[0],
+    }));
+  };
+
   const handleSubmit = (e) => {
     e.preventDefault();
+
+    const area = parseFloat(formData.length) * parseFloat(formData.width);
+    const materialCost = formData.material === 'Material1' ? 10 : 20;
+    const distanceCost = parseFloat(formData.distance) * 2;
+    const quote = area * materialCost + distanceCost;
 
     if (editIndex !== null) {
       setRows((prevRows) => {
         const updatedRows = [...prevRows];
-        updatedRows[editIndex] = formData;
+        updatedRows[editIndex] = { ...formData, quote };
         return updatedRows;
       });
       setEditIndex(null);
     } else {
-      setRows((prevRows) => [...prevRows, formData]);
+      setRows((prevRows) => [...prevRows, { ...formData, quote }]);
     }
 
     setFormData({
-      profilePic: null,
-      name: "",
-      job: "",
-      code: "",
-      shift: "",
-      department: "",
-      status: "",
+      EntryDate: "",
+      EmployeeName: '',
+      CompanyName: '',
+      CustomerName: '',
+      StartTime: '',
+      status: '',
+      length: '',
+      width: '',
+      material: '',
+      distance: '',
+      quote: '',
+      profilePic: '',
+      sketch: '',
     });
 
     setFormVisible(false);
@@ -122,7 +146,7 @@ localStorage.setItem('srNo', srNo.toString());
     const doc = new jsPDF();
     rows.forEach((row, index) => {
       const yPos = 10 + (index * 10);
-      doc.text(`${row.name} - ${row.code}`, 10, yPos);
+      doc.text(`${row.EmployeeName} - ${row.quote}`, 10, yPos);
     });
     doc.save('employee_table.pdf');
   };
@@ -132,10 +156,8 @@ localStorage.setItem('srNo', srNo.toString());
   };
 
   const filteredRows = rows.filter((row) => {
-    // Check if row.name and row.status are defined before accessing them
-    const name = row.name ? row.name.toLowerCase() : '';
+    const name = row.EmployeeName ? row.EmployeeName.toLowerCase() : '';
     const status = row.status ? row.status.toLowerCase() : '';
-  
     if (filter === 'All') {
       return name.includes(searchTerm.toLowerCase());
     } else {
@@ -148,14 +170,14 @@ localStorage.setItem('srNo', srNo.toString());
 
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-    <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-      <div className='w-[3vw]'>
-      <img src="/Sales/Salespages/Designer.png" className="image-hover-effect" alt="Leave" />
-      </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>Designer Activities</h1>
+      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
+        <div className='w-[3vw]'>
+          <img src="/Sales/Salespages/Designer.png" className="image-hover-effect" alt="Leave" />
+        </div>
+        <h1 className=' text-[2vw] text-[#E9278E]'>Designer Activities</h1>
       </div>
       <div className="h-[50vw]">
-        <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center"> 
+        <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
           <input
             className="p-[0.3vw] w-[18vw] text-[1vw] rounded-md mx-[1vw]"
             type="text"
@@ -191,7 +213,12 @@ localStorage.setItem('srNo', srNo.toString());
               <th className="border p-[0.5vw] text-[1vw]">Company Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Customer Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Start Time</th>
+              <th className="border p-[0.5vw] text-[1vw]">Length</th>
+              <th className="border p-[0.5vw] text-[1vw]">Width</th>
+              <th className="border p-[0.5vw] text-[1vw]">Material</th>
+              <th className="border p-[0.5vw] text-[1vw]">Distance</th>
               <th className="border p-[0.5vw] text-[1vw]">Status</th>
+              <th className="border p-[0.5vw] text-[1vw]">Width</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
@@ -200,11 +227,16 @@ localStorage.setItem('srNo', srNo.toString());
               <tr key={index}>
                 <td className="p-[1.5vw]">{index + 1}</td>
                 <td className="p-[1.5vw]">{row.EntryDate}</td>
-                <td className="p-[1.5vw]">{row.name}</td>
+                <td className="p-[1.5vw]">{row.EmployeeName}</td>
                 <td className='p-[1.5vw]'>{row.CompanyName}</td>
                 <td className='p-[1.5vw]'>{row.CustomerName}</td>
                 <td className='p-[1.5vw]'>{row.StartTime}</td>
+                <td className='p-[1.5vw]'>{row.length}</td>
+                <td className='p-[1.5vw]'>{row.width}</td>
+                <td className='p-[1.5vw]'>{row.material}</td>
+                <td className='p-[1.5vw]'>{row.distance}</td>
                 <td className='p-[1.5vw]'>{row.status}</td>
+                <td className='p-[1.5vw]'>{row.quote}</td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -228,9 +260,9 @@ localStorage.setItem('srNo', srNo.toString());
       {!isFormVisible && (
         <div className="absolute bottom-4 left-4">
           <button
-            className="w-[4vw] p-2 rounded "
+            className="w-[4vw] p-2 rounded"
             onClick={toggleFormVisibility}>
-              <img src="/HRM/form.png" className='w-[2vw]' alt="" />
+            <img src="/HRM/form.png" className='w-[2vw]' alt="" />
           </button>
         </div>
       )}
@@ -245,7 +277,7 @@ localStorage.setItem('srNo', srNo.toString());
               <img src="/HRM/close.png" className='w-[2vw]' alt="" />
             </button>
           </div>
-          <form onSubmit={handleSubmit} className="overflow-y-auto  p-[1vw] ">
+          <form onSubmit={handleSubmit} className="overflow-y-auto p-[1vw]">
             <div className="mb-[0.3vw]">
               <label htmlFor="EntryDate" className="block mb-[0.3vw] text-[1vw]">
                 Entry Date:
@@ -260,14 +292,14 @@ localStorage.setItem('srNo', srNo.toString());
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="name" className="block mb-[0.3vw] text-[1vw]">
+              <label htmlFor="EmployeeName" className="block mb-[0.3vw] text-[1vw]">
                 Employee Name:
               </label>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                id="EmployeeName"
+                name="EmployeeName"
+                value={formData.EmployeeName}
                 onChange={handleChange}
                 className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
               />
@@ -312,15 +344,70 @@ localStorage.setItem('srNo', srNo.toString());
               />
             </div>
             <div className="mb-[0.3vw]">
+              <label htmlFor="length" className="block mb-[0.3vw] text-[1vw]">
+                Length:
+              </label>
+              <input
+                type="text"
+                id="length"
+                name="length"
+                value={formData.length}
+                onChange={handleChange}
+                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="width" className="block mb-[0.3vw] text-[1vw]">
+                Width:
+              </label>
+              <input
+                type="text"
+                id="width"
+                name="width"
+                value={formData.width}
+                onChange={handleChange}
+                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="material" className="block mb-[0.3vw] text-[1vw]">
+                Material:
+              </label>
+              <select
+                id="material"
+                name="material"
+                value={formData.material}
+                onChange={handleChange}
+                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
+              >
+                <option value="Material1">Iron</option>
+                <option value="Material2">Wood</option>
+                <option value="Material2">Aluminium</option>
+              </select>
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="distance" className="block mb-[0.3vw] text-[1vw]">
+                Distance:
+              </label>
+              <input
+                type="text"
+                id="distance"
+                name="distance"
+                value={formData.distance}
+                onChange={handleChange}
+                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
               <label htmlFor="status" className="block mb-[0.3vw] text-[1vw]">
                 Status:
               </label>
               <select
-                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
                 id="status"
                 name="status"
                 value={formData.status}
                 onChange={handleChange}
+                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
               >
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
@@ -330,13 +417,13 @@ localStorage.setItem('srNo', srNo.toString());
               type="submit"
               className="bg-[#E9278E] mt-[0.5vw] text-white p-2 rounded w-full"
             >
-              {editIndex !== null ? "Edit Employee" : "Add Employee"}
+              {editIndex !== null ? "Edit" : "Add"}
             </button>
           </form>
         </div>
       )}
     </div>
-  )
-}
+  );
+};
 
-export default DesignerActivities
+export default DesignerActivities;

@@ -198,15 +198,14 @@ const ProjectStatus = () => {
       <table className="w-[80vw] overflow-y-auto">
         <thead className="bg-gray-300 w-[80vw]">
           <tr className="w-[80vw]">
-            <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+            <th className="border p-[0.5vw] text-[1vw]">Project no</th>
             <th className="border p-[0.5vw] text-[1vw]">Added Date</th>
             <th className="border p-[0.5vw] text-[1vw]">Contact #</th>
             <th className="border p-[0.5vw] text-[1vw]">Project Name</th>
             <th className="border p-[0.5vw] text-[1vw]">Customer Name</th>
             <th className="border p-[0.5vw] text-[1vw]">Site Status</th>
-            <th className="border p-[0.5vw] text-[1vw]">Design</th>
             <th className="border p-[0.5vw] text-[1vw]">Sales Designer</th>
-            <th className="border p-[0.5vw] text-[1vw]">Out Date</th>
+            <th className="border p-[0.5vw] text-[1vw]">Project Date</th>
             <th className="border p-[0.5vw] text-[1vw]">Actual Date</th>
             <th className="border p-[0.5vw] text-[1vw]">Due Amount</th>
             <th className="border p-[0.5vw] text-[1vw]">Progress</th>
@@ -222,9 +221,8 @@ const ProjectStatus = () => {
               <td>{row.ProjectName}</td>
               <td>{row.CustomerName}</td>
               <td>{row.SiteStatus}</td>
-              <td>{row.Design}</td>
               <td>{row.SalesDesigner}</td>
-              <td>{row.OutDate}</td>
+              <td>{row.ProjectDate}</td>
               <td>{row.ActualDate}</td>
               <td>{row.DueAmount}</td>
               <td>{row.Progress}</td>
@@ -320,16 +318,6 @@ const ProjectStatus = () => {
             </select>
           </div>
           <div className="mb-[0.3vw]">
-            <h1>Design:</h1>
-            <input
-              type="text"
-              name="Design"
-              value={formData.Design}
-              onChange={handleChange}
-              className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
-            />
-          </div>
-          <div className="mb-[0.3vw]">
             <h1>Sales Designer:</h1>
             <input
               type="text"
@@ -340,11 +328,11 @@ const ProjectStatus = () => {
             />
           </div>
           <div className="mb-[0.3vw]">
-            <h1>Out Date:</h1>
+            <h1>Project Date:</h1>
             <input
               type="date"
-              name="OutDate"
-              value={formData.OutDate}
+              name="ProjectDate"
+              value={formData.ProjectDate}
               onChange={handleChange}
               className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
             />

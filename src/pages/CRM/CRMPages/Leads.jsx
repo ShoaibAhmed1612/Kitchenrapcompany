@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
+import { Link } from "react-router-dom";
 
 const Leads = () => {
   const [formData, setFormData] = useState({
@@ -111,7 +112,9 @@ const Leads = () => {
     if (filter === "Active") {
       setRows((prevRows) => prevRows.filter((row) => row.status === "Active"));
     } else if (filter === "Inactive") {
-      setRows((prevRows) => prevRows.filter((row) => row.status === "Inactive"));
+      setRows((prevRows) =>
+        prevRows.filter((row) => row.status === "Inactive")
+      );
     }
   };
 
@@ -144,13 +147,30 @@ const Leads = () => {
     }
   });
 
+  const handleEstimateClick = (rowData) => {
+    const form = document.createElement("form");
+    form.method = "POST";
+    form.action = "/CRM/Estimates";
+    const hiddenInput = document.createElement("input");
+    hiddenInput.type = "hidden";
+    hiddenInput.name = "leadData";
+    hiddenInput.value = JSON.stringify(rowData);
+    form.appendChild(hiddenInput);
+    document.body.appendChild(form);
+    form.submit();
+  };
+
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-    <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-      <div className='w-[3vw]'>
-      <img src="/CRM/pages/Leads.png" className="image-hover-effect" alt="Leave" />
-      </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>Leads</h1>
+      <div className="flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect">
+        <div className="w-[3vw]">
+          <img
+            src="/CRM/pages/Leads.png"
+            className="image-hover-effect"
+            alt="Leave"
+          />
+        </div>
+        <h1 className=" text-[2vw] text-[#E9278E]">Leads</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row overflow-y-auto px-[2vw] items-center">
@@ -186,8 +206,14 @@ const Leads = () => {
             className="w-[2vw] bg-sky-500 mx-[0.5vw] rounded-md"
             onClick={handleExport}
           >
-             <img src="/HRM/export.png" alt="" />
+            <img src="/HRM/export.png" alt="" />
           </button>
+          <button
+          className=" p-[0.4vw] bg-gray-500 mx-[0.5vw] rounded-md"
+          onClick={handleEstimateClick} // This is the Estimate button
+        >
+          Estimate
+        </button>
         </div>
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
@@ -215,15 +241,15 @@ const Leads = () => {
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
-                    onClick={() => handleEdit(index)}
+                    onClick={() => handleEstimateClick(row)}
                   >
-                     <img src="/HRM/edit.png" className="w-[1.4vw]" alt="" />
+                    <img src="/HRM/edit.png" className="w-[1.4vw]" alt="" />
                   </button>
                   <button
                     className="hover:bg-red-500 p-2 rounded-full"
                     onClick={() => handleDelete(index)}
                   >
-                    <img src="/HRM/Trash.png" className="w-[1.4vw]" alt=""/>
+                    <img src="/HRM/Trash.png" className="w-[1.4vw]" alt="" />
                   </button>
                 </td>
               </tr>
@@ -244,7 +270,7 @@ const Leads = () => {
       )}
 
       {isFormVisible && (
-  <div className="w-[30vw] bg-white shadow-lg absolute right-0 z-10 top-0 overflow-y-auto rounded-lg ml-4 h-[35vw]">
+        <div className="w-[30vw] bg-white shadow-lg absolute right-0 z-10 top-0 overflow-y-auto rounded-lg ml-4 h-[35vw]">
           <div className="flex justify-between p-4">
             <button
               className="hover:bg-red-500  bg-white shadow-lg rounded-[0.7vw] text-white p-[1vw]"

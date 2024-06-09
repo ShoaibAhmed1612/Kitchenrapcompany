@@ -5,12 +5,12 @@ const SalesGoal = () => {
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem('formData');
     return savedData ? JSON.parse(savedData) : {
+      MonthYear: "",
       EntryDate: "",
       EmployeeName: "",
       StartDate: '',
       EndDate: "",
       TotalCollection: '',
-      TotalCommition: '',
       TotalPaidCommition: '',
       TotalRemainingCommition: '',
       status: '',
@@ -81,12 +81,12 @@ const SalesGoal = () => {
     }
 
     setFormData({
+      MonthYear: "",
       EntryDate: "",
       EmployeeName: "",
       StartDate: '',
       EndDate: "",
       TotalCollection: '',
-      TotalCommition: '',
       TotalPaidCommition: '',
       TotalRemainingCommition: '',
       status: '',
@@ -149,13 +149,20 @@ const SalesGoal = () => {
     }
   });
 
+  const calculateCommission = (totalSales) => {
+    // Assuming commission rate is 3%
+    const commissionRate = 0.03;
+    const commission = totalSales * commissionRate;
+    return commission.toFixed(2); // Round to 2 decimal places
+  };
+
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-    <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-      <div className='w-[3vw]'>
-      <img src="/Sales/Salespages/Goal.png" className="image-hover-effect" alt="Leave" />
-      </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>Sales Goal</h1>
+      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
+        <div className='w-[3vw]'>
+          <img src="/Sales/Salespages/Goal.png" className="image-hover-effect" alt="Leave" />
+        </div>
+        <h1 className=' text-[2vw] text-[#E9278E]'>Sales Goal</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center"> 
@@ -188,7 +195,7 @@ const SalesGoal = () => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Month and Year</th>
               <th className="border p-[0.5vw] text-[1vw]">Booked Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Employee Name</th>
               <th className='border p-[0.5vw] text-[1vw]'>Start Date</th>
@@ -204,13 +211,13 @@ const SalesGoal = () => {
           <tbody className="rounded-lg bg-gray-100 w-[80vw] text-center">
             {filteredRows.map((row, index) => (
               <tr key={index}>
-                <td className="p-[1.5vw]">{index + 1}</td>
+                <td className="p-[1.5vw]">{row.MonthYear}</td>
                 <td className="p-[1.5vw]">{row.EntryDate}</td>
                 <td className="p-[1.5vw]">{row.EmployeeName}</td>
                 <td className="p-[1.5vw]">{row.StartDate}</td>
                 <td className="p-[1.5vw]">{row.EndDate}</td>
                 <td className="p-[1.5vw]">{row.TotalCollection}</td>
-                <td className="p-[1.5vw]">{row.TotalCommition}</td>
+                <td className="p-[1.5vw]">{calculateCommission(row.TotalCollection)}</td>
                 <td className="p-[1.5vw]">{row.TotalPaidCommition}</td>
                 <td className="p-[1.5vw]">{row.TotalRemainingCommition}</td>
                 <td className="p-[1.5vw]">{row.status}</td>
@@ -255,6 +262,19 @@ const SalesGoal = () => {
             </button>
           </div>
           <form onSubmit={handleSubmit} className="overflow-y-auto  p-[1vw] ">
+            <div className="mb-[0.3vw]">
+              <label htmlFor="MonthYear" className="block mb-[0.3vw] text-[1vw]">
+                Month and Year:
+              </label>
+              <input
+                type="date"
+                id="MonthYear"
+                name="MonthYear"
+                value={formData.MonthYear}
+                onChange={handleChange}
+                className='border border-black p-[0.3vw] rounded-md w-[20vw]'
+              />
+            </div>
             <div className="mb-[0.3vw]">
               <label htmlFor="EntryDate" className="block mb-[0.3vw] text-[1vw]">
                 Booked Date:
@@ -321,19 +341,6 @@ const SalesGoal = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="TotalCommition" className="block mb-[0.3vw] text-[1vw]">
-                Total Commition:
-              </label>
-              <input
-                type="text"
-                id="TotalCommition"
-                name="TotalCommition"
-                value={formData.TotalCommition}
-                onChange={handleChange}
-                className='border border-black p-[0.3vw] rounded-md w-[20vw]'
-              />
-            </div>
-            <div className="mb-[0.3vw]">
               <label htmlFor="TotalPaidCommition" className="block mb-[0.3vw] text-[1vw]">
                 Total Paid Commition:
               </label>
@@ -384,7 +391,9 @@ const SalesGoal = () => {
         </div>
       )}
     </div>
-  )
+  );
 }
 
 export default SalesGoal;
+
+

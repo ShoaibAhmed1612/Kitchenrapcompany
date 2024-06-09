@@ -153,7 +153,7 @@ const Product = () => {
       <div className='w-[3vw]'>
       <img src="/Inventory/product.png" className="image-hover-effect" alt="Leave" />
       </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>Products</h1>
+      <h1 className=' text-[2vw] text-[#E9278E]'>Live Inventory</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
@@ -195,7 +195,7 @@ const Product = () => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+              <th className="border p-[0.5vw] text-[1vw]">SKU no</th>
               <th className="border p-[0.5vw] text-[1vw]">Category</th>
               <th className="border p-[0.5vw] text-[1vw]">Sub Category</th>
               <th className="border p-[0.5vw] text-[1vw]">SKU</th>

@@ -182,7 +182,7 @@ const AfterSales = () => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-            <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+            <th className="border p-[0.5vw] text-[1vw]">Project no</th>
               <th className="border p-[0.5vw] text-[1vw]">Complained Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Complained no</th>
               <th className="border p-[0.5vw] text-[1vw]">Customer Name</th>

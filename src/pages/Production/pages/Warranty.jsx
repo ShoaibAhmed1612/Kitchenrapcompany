@@ -46,15 +46,6 @@ const Warranty = () => {
     localStorage.setItem('srNo', srNo.toString());
   }, [srNo]);
 
-  const addEmployee = () => {
-    const newEmployee = {
-      id: srNo,
-      name: `Employee ${srNo}`,
-    };
-    setRows([...rows, newEmployee]);
-    setSrNo(srNo + 1);
-  };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prevData) => ({
@@ -115,9 +106,9 @@ const Warranty = () => {
 
   const handleFilter = () => {
     if (filter === 'Active') {
-      setRows((prevRows) => prevRows.filter((row) => row.status === 'Active'));
+      setRows((prevRows) => prevRows.filter((row) => row.Status === 'Active'));
     } else if (filter === 'Inactive') {
-      setRows((prevRows) => prevRows.filter((row) => row.status === 'Inactive'));
+      setRows((prevRows) => prevRows.filter((row) => row.Status === 'Inactive'));
     }
   };
 
@@ -125,9 +116,9 @@ const Warranty = () => {
     const doc = new jsPDF();
     rows.forEach((row, index) => {
       const yPos = 10 + (index * 10);
-      doc.text(`${row.name} - ${row.code}`, 10, yPos);
+      doc.text(`${row.CustomerName} - ${row.Contract}`, 10, yPos);
     });
-    doc.save('employee_table.pdf');
+    doc.save('warranty_table.pdf');
   };
 
   const handleSearch = (e) => {
@@ -135,8 +126,8 @@ const Warranty = () => {
   };
 
   const filteredRows = rows.filter((row) => {
-    const name = row.CustomerName ? row.CustomerName.toLowerCase() : ''; // Corrected variable name
-    const status = row.Status ? row.Status.toLowerCase() : ''; // Corrected variable name
+    const name = row.CustomerName ? row.CustomerName.toLowerCase() : ''; 
+    const status = row.Status ? row.Status.toLowerCase() : ''; 
 
     if (filter === 'All') {
       return name.includes(searchTerm.toLowerCase());
@@ -148,14 +139,30 @@ const Warranty = () => {
     }
   });
 
+  const handleGenerateCertificate = (row) => {
+    const doc = new jsPDF();
+    doc.setFontSize(20);
+    doc.text('Warranty Certificate', 20, 20);
+
+    doc.setFontSize(12);
+    doc.text(`Customer Name: ${row.CustomerName}`, 20, 40);
+    doc.text(`Product Name: ${row.ProductName}`, 20, 50);
+    doc.text(`Activation Date: ${row.ActivationDate}`, 20, 60);
+    doc.text(`Expiry Date: ${row.ExpiryDate}`, 20, 70);
+    doc.text(`Warrenty Policy: ${row.WarrentyPolicy}`, 20, 80);
+    doc.text(`Branch name: ${row.Branchname}`, 20, 90);
+
+    doc.save(`Warranty_Certificate_${row.CustomerName}.pdf`);
+  };
+
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-        <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-          <div className='w-[3vw]'>
+      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
+        <div className='w-[3vw]'>
           <img src="/production/warranty.png" className="image-hover-effect" alt="Leave" />
-          </div>
-          <h1 className=' text-[2vw] text-[#E9278E]'>Warranty</h1>
-          </div>
+        </div>
+        <h1 className=' text-[2vw] text-[#E9278E]'>Warranty</h1>
+      </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
           <input
@@ -207,8 +214,7 @@ const Warranty = () => {
               <th className="border p-[0.5vw] text-[1vw]">Activation Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Expiry Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Extended</th>
-              <th className="border p-[0.5vw] text-[1vw]">Status</th>
-              <th className="border p-[0.5vw] text-[1vw]">Actions</th>
+              <th className="border p-[0.5vw] text-[1vw]">Status</th> <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
           <tbody className="rounded-lg bg-gray-100 w-[80vw] text-center">
@@ -226,8 +232,7 @@ const Warranty = () => {
                 <td>{row.ExpiryDate}</td> 
                 <td>{row.Extended}</td> 
                 <td>{row.Status}</td> 
-                <td>Progress will be shown</td>
-                <td className="p-[0.1vw]">
+                <td>
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
                     onClick={() => handleEdit(index)}
@@ -239,6 +244,12 @@ const Warranty = () => {
                     onClick={() => handleDelete(index)}
                   >
                     <img src="/HRM/Trash.png" className="w-[1.4vw]" alt="" />
+                  </button>
+                  <button
+                    className="hover:bg-green-500 p-2 rounded-full"
+                    onClick={() => handleGenerateCertificate(row)}
+                  >
+                    <img src="/HRM/certificate.png" className="w-[1.4vw]" alt="" />
                   </button>
                 </td>
               </tr>

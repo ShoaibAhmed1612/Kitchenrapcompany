@@ -7,73 +7,75 @@ const PreLeads = () => {
     return savedData
       ? JSON.parse(savedData)
       : {
-    contactDate: "",
-    name: "",
-    email: "",
-    PhoneNo: "",
-    Source: "",
-    City: "",
-    Address: "",
-    BranchName: "",
-    status: "",
-  }
-});
-const [isFormVisible, setFormVisible] = useState(false);
-const [editIndex, setEditIndex] = useState(null);
-const [srNo, setSrNo] = useState(() => {
-  const savedSrNo = localStorage.getItem('srNo');
-  return savedSrNo ? parseInt(savedSrNo) : 1;
-});
-const [rows, setRows] = useState(() => {
-  const savedRows = localStorage.getItem('rows');
-  return savedRows ? JSON.parse(savedRows) : [];
-});
-const [searchTerm, setSearchTerm] = useState('');
-const [filter, setFilter] = useState('All');
+          RFQNo: "", // Changed from 'id' to 'RFQNo'
+          contactDate: "",
+          name: "",
+          email: "",
+          PhoneNo: "",
+          Source: "",
+          City: "",
+          Address: "",
+          BranchName: "",
+          status: "",
+        };
+  });
+  const [isFormVisible, setFormVisible] = useState(false);
+  const [editIndex, setEditIndex] = useState(null);
+  const [RFQNo, setRFQNo] = useState(() => {
+    const savedRFQNo = localStorage.getItem('RFQNo');
+    return savedRFQNo ? parseInt(savedRFQNo) : 1;
+  });
+  const [rows, setRows] = useState(() => {
+    const savedRows = localStorage.getItem('rows');
+    return savedRows ? JSON.parse(savedRows) : [];
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('All');
 
-useEffect(() => {
-  localStorage.setItem('formData', JSON.stringify(formData));
-}, [formData]);
+  useEffect(() => {
+    localStorage.setItem('formData', JSON.stringify(formData));
+  }, [formData]);
 
-useEffect(() => {
-  localStorage.setItem('rows', JSON.stringify(rows));
-}, [rows]);
+  useEffect(() => {
+    localStorage.setItem('rows', JSON.stringify(rows));
+  }, [rows]);
 
-useEffect(() => {
-  localStorage.setItem('srNo', srNo.toString());
-}, [srNo]);
+  useEffect(() => {
+    localStorage.setItem('RFQNo', RFQNo.toString());
+  }, [RFQNo]);
 
-const addEmployee = () => {
-  const newEmployee = {
-    id: srNo,
-    name: `Employee ${srNo}`,
+  const addLead = () => { // Renamed function to addLead
+    const newLead = {
+      RFQNo: RFQNo, // Changed from 'id' to 'RFQNo'
+      name: formData.name, // Using name from form data
+    };
+    setRows([...rows, newLead]);
+    setRFQNo(RFQNo + 1);
   };
-  setRows([...rows, newEmployee]);
-  setSrNo(srNo + 1);
-};
 
-const handleChange = (e) => {
-  const { name, value } = e.target;
-  setFormData((prevData) => ({
-    ...prevData,
-    [name]: value,
-  }));
-};
+  const handleChange = (e) => {
+    const { name, value } = e.target;
+    setFormData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
 
-const handleSubmit = (e) => {
-  e.preventDefault();
+  const handleSubmit = (e) => {
+    e.preventDefault();
 
-  if (editIndex !== null) {
-    setRows((prevRows) => {
-      const updatedRows = [...prevRows];
-      updatedRows[editIndex] = formData;
-      return updatedRows;
-    });
-    setEditIndex(null);
-  } else {
-    setRows((prevRows) => [...prevRows, formData]);
-  }
+    if (editIndex !== null) {
+      setRows((prevRows) => {
+        const updatedRows = [...prevRows];
+        updatedRows[editIndex] = formData;
+        return updatedRows;
+      });
+      setEditIndex(null);
+    } else {
+      addLead(); // Call addLead function to add lead
+    }
     setFormData({
+      RFQNo: "", // Changed from 'id' to 'RFQNo'
       contactDate: "",
       name: "",
       email: "",
@@ -86,7 +88,6 @@ const handleSubmit = (e) => {
     });
     setFormVisible(false);
   };
-
   const handleDelete = (index) => {
     setRows((prevRows) => prevRows.filter((_, i) => i !== index));
   };
@@ -189,7 +190,7 @@ const handleSubmit = (e) => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[70vw]">
-              <th className="border p-[0.2vw] text-[0.8vw]">Sr no</th>
+              <th className="border p-[0.2vw] text-[0.8vw]">RFQ no</th>
               <th className="border p-[0.2vw] text-[0.8vw]">Contact date</th>
               <th className="border p-[0.2vw] text-[0.8vw]">Name</th>
               <th className="border p-[0.2vw] text-[0.8vw]">Email</th>

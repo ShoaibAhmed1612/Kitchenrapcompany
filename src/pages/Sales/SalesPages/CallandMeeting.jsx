@@ -152,7 +152,7 @@ const CallandMeeting = () => {
       <div className='w-[3vw]'>
       <img src="/Sales/Salespages/Callmeeting.png" className="image-hover-effect" alt="Leave" />
       </div>
-      <h1 className=' text-[2vw] text-[#E9278E]'>Call and Meeting</h1>
+      <h1 className=' text-[2vw] text-[#E9278E]'>Site Visit</h1>
       </div>
       <div className="h-[50vw] overflow-y-auto">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center"> 
@@ -185,12 +185,13 @@ const CallandMeeting = () => {
         <table className=" w-[80vw] ">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+              <th className="border p-[0.5vw] text-[1vw]">RFQ no</th>
               <th className="border p-[0.5vw] text-[1vw]">Entry Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Employee Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Company Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Customer Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Start Time</th>
+              <th className="border p-[0.5vw] text-[1vw]">Comments</th>
               <th className="border p-[0.5vw] text-[1vw]">Status</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
@@ -204,6 +205,7 @@ const CallandMeeting = () => {
                 <td className="p-[1.5vw]">{row.CompanyName}</td>
                 <td className="p-[1.5vw]">{row.CustomerName}</td>
                 <td className="p-[1.5vw]">{row.StartTime}</td>
+                <td className="p-[1.5vw]">{row.Comments}</td>
                 <td className="p-[1.5vw]">{row.status}</td>
                 <td className="p-[0.1vw]">
                   <button
@@ -306,6 +308,19 @@ const CallandMeeting = () => {
                 id="StartTime"
                 name="StartTime"
                 value={formData.StartTime}
+                onChange={handleChange}
+                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="Comments" className="block mb-[0.3vw] text-[1vw]">
+                Comments:
+              </label>
+              <input
+                type="text"
+                id="Comments"
+                name="Comments"
+                value={formData.Comments}
                 onChange={handleChange}
                 className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
               />

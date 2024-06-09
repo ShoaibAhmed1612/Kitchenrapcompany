@@ -9,9 +9,10 @@ const Customers = () => {
     Total: "",
     Location: "",
     Contactno: "",
+    Email: "",
+    CustomerCode: "",
+    ProjectNo: ""
   });
-
-  
 
   const [isFormVisible, setFormVisible] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
@@ -42,7 +43,19 @@ const Customers = () => {
     localStorage.setItem("rows", JSON.stringify(rows));
   }, [rows]);
 
+  const generateCustomerCode = () => {
+    const existingCustomer = rows.find(
+      (row) => row.Contactno === formData.Contactno
+    );
+    if (existingCustomer) {
+      return existingCustomer.CustomerCode;
+    } else {
+      return `CC${Math.floor(Math.random() * 10000)}`;
+    }
+  };
+
   const addCustomer = () => {
+    const customerCode = generateCustomerCode();
     const newCustomer = {
       id: srNo,
       Branch: formData.Branch,
@@ -51,6 +64,9 @@ const Customers = () => {
       Total: formData.Total,
       Location: formData.Location,
       Contactno: formData.Contactno,
+      Email: formData.Email,
+      CustomerCode: customerCode,
+      ProjectNo: formData.ProjectNo
     };
     setRows([...rows, newCustomer]);
     setSrNo(srNo + 1);
@@ -85,6 +101,8 @@ const Customers = () => {
       Total: "",
       Location: "",
       Contactno: "",
+      Email: "",
+      ProjectNo: ""
     });
 
     setFormVisible(false);
@@ -145,7 +163,6 @@ const Customers = () => {
       );
     }
   });
-
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
     <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
@@ -200,6 +217,9 @@ const Customers = () => {
               <th className="border p-[0.5vw] text-[1vw]">Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Location</th>
               <th className="border p-[0.5vw] text-[1vw]">Contact no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Email</th>
+              <th className="border p-[0.5vw] text-[1vw]">Customer Code</th>
+              <th className="border p-[0.5vw] text-[1vw]">Project No</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
@@ -212,6 +232,9 @@ const Customers = () => {
                 <td>{row.Name}</td>
                 <td>{row.Location}</td>
                 <td>{row.Contactno}</td>
+                <td>{row.Email}</td>
+                <td>{row.CustomerCode}</td>
+                <td>{row.ProjectNo}</td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -316,6 +339,32 @@ const Customers = () => {
                 id="Contactno"
                 name="Contactno"
                 value={formData.Contactno}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="Email" className="block mb-1">
+                Email:
+              </label>
+              <input
+                type="email"
+                id="Email"
+                name="Email"
+                value={formData.Email}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="ProjectNo" className="block mb-1">
+                Project No:
+              </label>
+              <input
+                type="text"
+                id="ProjectNo"
+                name="ProjectNo"
+                value={formData.ProjectNo}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
               />
