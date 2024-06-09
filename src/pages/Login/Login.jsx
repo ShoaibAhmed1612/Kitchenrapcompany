@@ -9,15 +9,11 @@ const Login = () => {
   const handleSubmit = (e) => {
     e.preventDefault();
     // Simple validation check (this can be expanded)
-    if (email && password) {
-      // Save the email and password in JSON format
-      const userData = JSON.stringify({ email, password });
-      console.log(userData); // For demonstration purposes, replace this with actual handling
-
+    if (email === 'abdulrhoqeebb@gmail.com' && password === 'Ayodele12@') {
       // Redirect to the homepage
       navigate("/Dashboard");
     } else {
-      alert("Please enter both email and password");
+      alert("Incorrect email or password");
     }
   };
 
@@ -29,7 +25,6 @@ const Login = () => {
             Kitchen Wrap Company
           </h1>
         </div>
-
       </div>
       <div className="flex flex-row justify-center gap-36 pt-10">
         <div>
@@ -82,7 +77,6 @@ const Login = () => {
                 >
                   Login
                 </button>
-                
               </div>
             </form>
           </div>
