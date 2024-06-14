@@ -3,7 +3,7 @@ import { jsPDF } from "jspdf";
 
 const InventoryReport = () => {
   const [formData, setFormData] = useState(() => {
-    const savedData = localStorage.getItem('formData');
+    const savedData = localStorage.getItem("formData");
     return savedData
       ? JSON.parse(savedData)
       : {
@@ -19,27 +19,27 @@ const InventoryReport = () => {
   const [isFormVisible, setFormVisible] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [srNo, setSrNo] = useState(() => {
-    const savedSrNo = localStorage.getItem('srNo');
+    const savedSrNo = localStorage.getItem("srNo");
     return savedSrNo ? parseInt(savedSrNo) : 1;
   });
   const [rows, setRows] = useState(() => {
-    const savedRows = localStorage.getItem('rows');
+    const savedRows = localStorage.getItem("rows");
     return savedRows ? JSON.parse(savedRows) : [];
   });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("All");
   const [projectArea, setProjectArea] = useState(0);
 
   useEffect(() => {
-    localStorage.setItem('formData', JSON.stringify(formData));
+    localStorage.setItem("formData", JSON.stringify(formData));
   }, [formData]);
 
   useEffect(() => {
-    localStorage.setItem('rows', JSON.stringify(rows));
+    localStorage.setItem("rows", JSON.stringify(rows));
   }, [rows]);
 
   useEffect(() => {
-    localStorage.setItem('srNo', srNo.toString());
+    localStorage.setItem("srNo", srNo.toString());
   }, [srNo]);
 
   const addEmployee = () => {
@@ -65,6 +65,10 @@ const InventoryReport = () => {
     setFormData((prevData) => ({
       ...prevData,
       [name]: value,
+      Area:
+        name === "Length" || name === "Width"
+          ? prevData.Length * prevData.Width
+          : prevData.Area,
     }));
   };
 
@@ -74,7 +78,11 @@ const InventoryReport = () => {
     if (editIndex !== null) {
       setRows((prevRows) => {
         const updatedRows = [...prevRows];
-        updatedRows[editIndex] = { id: rows[editIndex].id, ...formData, Stock: parseFloat(formData.Stock) };
+        updatedRows[editIndex] = {
+          id: rows[editIndex].id,
+          ...formData,
+          Stock: parseFloat(formData.Stock),
+        };
         return updatedRows;
       });
       setEditIndex(null);
@@ -110,10 +118,10 @@ const InventoryReport = () => {
   const handleExport = () => {
     const doc = new jsPDF();
     rows.forEach((row, index) => {
-      const yPos = 10 + (index * 10);
+      const yPos = 10 + index * 10;
       doc.text(`${row.Productname} - ${row.Barcode}`, 10, yPos);
     });
-    doc.save('inventory_table.pdf');
+    doc.save("inventory_table.pdf");
   };
 
   const handleSearch = (e) => {
@@ -121,7 +129,7 @@ const InventoryReport = () => {
   };
 
   const calculateMaterials = (projectArea) => {
-    const requiredMeters = projectArea + (projectArea * 0.35);
+    const requiredMeters = projectArea + projectArea * 0.35;
     return Math.ceil(requiredMeters);
   };
 
@@ -129,17 +137,23 @@ const InventoryReport = () => {
     const requiredMeters = calculateMaterials(projectArea);
 
     rows.forEach((row, index) => {
-      if (row.Category === "Project A" && row.Productname === "kitchen measurements") {
+      if (
+        row.Category === "Project A" &&
+        row.Productname === "kitchen measurements"
+      ) {
         const currentStock = row.Stock;
         const toOrder = requiredMeters - currentStock;
 
         if (toOrder > 0) {
           console.log(`Order ${toOrder} meters of ${row.Productname}`);
         } else {
-          console.log(`Reserve ${requiredMeters} meters from stock for ${row.Productname}`);
+          console.log(
+            `Reserve ${requiredMeters} meters from stock for ${row.Productname}`
+          );
         }
 
-        const updatedStock = currentStock >= requiredMeters ? currentStock - requiredMeters : 0;
+        const updatedStock =
+          currentStock >= requiredMeters ? currentStock - requiredMeters : 0;
         const updatedRow = { ...row, Stock: updatedStock };
         setRows((prevRows) => {
           const updatedRows = [...prevRows];
@@ -151,26 +165,35 @@ const InventoryReport = () => {
   };
 
   const filteredRows = rows.filter((row) => {
-    const Category = row.Category ? row.Category.toLowerCase() : '';
-    const SubCategory = row.SubCategory ? row.SubCategory.toLowerCase() : '';
+    const category = row.Category ? row.Category.toLowerCase() : "";
+    const subCategory = row.SubCategory ? row.SubCategory.toLowerCase() : "";
+    const searchTermLower = searchTerm.toLowerCase();
 
-    if (filter === 'All') {
-      return Category.includes(searchTerm.toLowerCase());
+    if (filter === "All") {
+      return (
+        category.includes(searchTermLower) ||
+        subCategory.includes(searchTermLower)
+      );
     } else {
       return (
         row.status.toLowerCase() === filter.toLowerCase() &&
-        Category.includes(searchTerm.toLowerCase())
+        (category.includes(searchTermLower) ||
+          subCategory.includes(searchTermLower))
       );
     }
   });
 
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-        <div className='w-[3vw]'>
-          <img src="/Inventory/report.png" className="image-hover-effect" alt="Leave" />
+      <div className="flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect">
+        <div className="w-[3vw]">
+          <img
+            src="/Inventory/report.png"
+            className="image-hover-effect"
+            alt="Leave"
+          />
         </div>
-        <h1 className=' text-[2vw] text-[#E9278E]'>Inventory Report</h1>
+        <h1 className=" text-[2vw] text-[#E9278E]">Inventory Report</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
@@ -182,13 +205,15 @@ const InventoryReport = () => {
             onChange={handleSearch}
           />
           <select
-            className="p-[0.5vw] text-[1vw] w-[13vw] rounded-md mx-[1vw]"
-            value={filter}
-            onChange={(e) => setFilter(e.target.value)}
-          >
-            <option value="All">All</option>
-            {/* Add other status options */}
-          </select>
+                className="p-[0.5vw] text-[1vw] w-[13vw] rounded-md mx-[1vw]"
+                value={filter}
+                onChange={(e) => setFilter(e.target.value)}
+              >
+                <option value="All">All</option>
+                <option value="Available">Available</option>
+                <option value="Out of Stock">Out of Stock</option>
+                <option value="Discontinued">Discontinued</option>
+              </select>
           <button
             className="w-[2vw] bg-orange-500 mx-[0.5vw] rounded-md"
             onClick={handleRefresh}
@@ -211,7 +236,7 @@ const InventoryReport = () => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Project no</th>
               <th className="border p-[0.5vw] text-[1vw]">Category</th>
               <th className="border p-[0.5vw] text-[1vw]">Sub Category</th>
               <th className="border p-[0.5vw] text-[1vw]">SKU</th>
@@ -221,6 +246,7 @@ const InventoryReport = () => {
               <th className="border p-[0.5vw] text-[1vw]">Width (m)</th>
               <th className="border p-[0.5vw] text-[1vw]">Area (m²)</th>
               <th className="border p-[0.5vw] text-[1vw]">Stock</th>
+              <th className="border p-[0.5vw] text-[1vw]">Status</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
@@ -237,6 +263,7 @@ const InventoryReport = () => {
                 <td>{row.Width}</td>
                 <td>{row.Length * row.Width}</td>
                 <td>{row.Stock}</td>
+                <td>{row.status}</td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -366,6 +393,21 @@ const InventoryReport = () => {
                 className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
+            
+            <div className="mb-[0.3vw]">
+              <label>Status:</label>
+              <select
+                name="status"
+                value={formData.status}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              >
+                <option value="Available">Available</option>
+                <option value="Out of Stock">Out of Stock</option>
+                <option value="Discontinued">Discontinued</option>
+              </select>
+            </div>
+
             <button
               type="submit"
               className="bg-[#E9278E] mt-[0.5vw] text-white p-2 rounded w-full"
@@ -377,6 +419,6 @@ const InventoryReport = () => {
       )}
     </div>
   );
-}
+};
 
 export default InventoryReport;

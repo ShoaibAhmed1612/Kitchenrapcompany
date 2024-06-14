@@ -5,7 +5,6 @@ const SalesGoal = () => {
   const [formData, setFormData] = useState(() => {
     const savedData = localStorage.getItem('formData');
     return savedData ? JSON.parse(savedData) : {
-      MonthYear: "",
       EntryDate: "",
       EmployeeName: "",
       StartDate: '',
@@ -81,7 +80,6 @@ const SalesGoal = () => {
     }
 
     setFormData({
-      MonthYear: "",
       EntryDate: "",
       EmployeeName: "",
       StartDate: '',
@@ -195,7 +193,6 @@ const SalesGoal = () => {
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Month and Year</th>
               <th className="border p-[0.5vw] text-[1vw]">Booked Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Employee Name</th>
               <th className='border p-[0.5vw] text-[1vw]'>Start Date</th>
@@ -210,8 +207,7 @@ const SalesGoal = () => {
           </thead>
           <tbody className="rounded-lg bg-gray-100 w-[80vw] text-center">
             {filteredRows.map((row, index) => (
-              <tr key={index}>
-                <td className="p-[1.5vw]">{row.MonthYear}</td>
+                <tr key={index}>
                 <td className="p-[1.5vw]">{row.EntryDate}</td>
                 <td className="p-[1.5vw]">{row.EmployeeName}</td>
                 <td className="p-[1.5vw]">{row.StartDate}</td>
@@ -262,19 +258,6 @@ const SalesGoal = () => {
             </button>
           </div>
           <form onSubmit={handleSubmit} className="overflow-y-auto  p-[1vw] ">
-            <div className="mb-[0.3vw]">
-              <label htmlFor="MonthYear" className="block mb-[0.3vw] text-[1vw]">
-                Month and Year:
-              </label>
-              <input
-                type="date"
-                id="MonthYear"
-                name="MonthYear"
-                value={formData.MonthYear}
-                onChange={handleChange}
-                className='border border-black p-[0.3vw] rounded-md w-[20vw]'
-              />
-            </div>
             <div className="mb-[0.3vw]">
               <label htmlFor="EntryDate" className="block mb-[0.3vw] text-[1vw]">
                 Booked Date:
