@@ -1,49 +1,50 @@
-import React, { useState, useEffect } from 'react';
-import { jsPDF } from 'jspdf';
+import React, { useState, useEffect } from "react";
+import { jsPDF } from "jspdf";
 
 const DesignerActivities = () => {
   const [formData, setFormData] = useState(() => {
-    const savedData = localStorage.getItem('formData');
-    return savedData ? JSON.parse(savedData) : {
-      EntryDate: "",
-      EmployeeName: '',
-      CompanyName: '',
-      CustomerName: '',
-      StartTime: '',
-      status: '',
-      length: '',
-      width: '',
-      material: '',
-      distance: '',
-      quote: '',
-      profilePic: '',
-      sketch: '',
-    };
+    const savedData = localStorage.getItem("formData");
+    return savedData
+      ? JSON.parse(savedData)
+      : {
+          EntryDate: "",
+          EmployeeName: "",
+          CompanyName: "",
+          CustomerName: "",
+          StartTime: "",
+          status: "",
+          dimensions: [{ length: "", width: "" }], // Ensure dimensions is always defined
+          material: "",
+          distance: "",
+          quote: "",
+          profilePic: "",
+          sketch: "",
+        };
   });
 
   const [isFormVisible, setFormVisible] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
   const [srNo, setSrNo] = useState(() => {
-    const savedSrNo = localStorage.getItem('srNo');
+    const savedSrNo = localStorage.getItem("srNo");
     return savedSrNo ? parseInt(savedSrNo) : 1;
   });
   const [rows, setRows] = useState(() => {
-    const savedRows = localStorage.getItem('rows');
+    const savedRows = localStorage.getItem("rows");
     return savedRows ? JSON.parse(savedRows) : [];
   });
-  const [searchTerm, setSearchTerm] = useState('');
-  const [filter, setFilter] = useState('All');
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filter, setFilter] = useState("All");
 
   useEffect(() => {
-    localStorage.setItem('formData', JSON.stringify(formData));
+    localStorage.setItem("formData", JSON.stringify(formData));
   }, [formData]);
 
   useEffect(() => {
-    localStorage.setItem('rows', JSON.stringify(rows));
+    localStorage.setItem("rows", JSON.stringify(rows));
   }, [rows]);
 
   useEffect(() => {
-    localStorage.setItem('srNo', srNo.toString());
+    localStorage.setItem("srNo", srNo.toString());
   }, [srNo]);
 
   const addEmployee = () => {
@@ -63,6 +64,31 @@ const DesignerActivities = () => {
     }));
   };
 
+  const handleDimensionChange = (e, index, field) => {
+    const { value } = e.target;
+    const newDimensions = (formData.dimensions || []).map((dimension, i) =>
+      i === index ? { ...dimension, [field]: value } : dimension
+    );
+    setFormData((prevData) => ({
+      ...prevData,
+      dimensions: newDimensions,
+    }));
+  };
+
+  const addDimensionRow = () => {
+    setFormData((prevData) => ({
+      ...prevData,
+      dimensions: [...(prevData.dimensions || []), { length: "", width: "" }],
+    }));
+  };
+
+  const removeDimensionRow = (index) => {
+    setFormData((prevData) => ({
+      ...prevData,
+      dimensions: (prevData.dimensions || []).filter((_, i) => i !== index),
+    }));
+  };
+
   const handleFileChange = (e) => {
     setFormData((prevData) => ({
       ...prevData,
@@ -79,12 +105,15 @@ const DesignerActivities = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
-    const area = parseFloat(formData.length) * parseFloat(formData.width);
-    const materialCost = formData.material === 'Material1' ? 10 : 20;
+  
+    const totalArea = formData.dimensions.reduce((sum, { length, width }) => {
+      return sum + parseFloat(length) * parseFloat(width);
+    }, 0);
+  
+    const materialCost = formData.material === "Material1" ? 10 : 20;
     const distanceCost = parseFloat(formData.distance) * 2;
-    const quote = area * materialCost + distanceCost;
-
+    const quote = totalArea * materialCost + distanceCost;
+  
     if (editIndex !== null) {
       setRows((prevRows) => {
         const updatedRows = [...prevRows];
@@ -95,25 +124,24 @@ const DesignerActivities = () => {
     } else {
       setRows((prevRows) => [...prevRows, { ...formData, quote }]);
     }
-
+  
     setFormData({
       EntryDate: "",
-      EmployeeName: '',
-      CompanyName: '',
-      CustomerName: '',
-      StartTime: '',
-      status: '',
-      length: '',
-      width: '',
-      material: '',
-      distance: '',
-      quote: '',
-      profilePic: '',
-      sketch: '',
+      EmployeeName: "",
+      CompanyName: "",
+      CustomerName: "",
+      StartTime: "",
+      status: "",
+      dimensions: [{ length: "", width: "" }],
+      material: "",
+      distance: "",
+      quote: "",
+      profilePic: "",
+      sketch: "",
     });
-
     setFormVisible(false);
   };
+  
 
   const handleDelete = (index) => {
     setRows((prevRows) => prevRows.filter((_, i) => i !== index));
@@ -135,20 +163,22 @@ const DesignerActivities = () => {
   };
 
   const handleFilter = () => {
-    if (filter === 'Active') {
-      setRows((prevRows) => prevRows.filter((row) => row.status === 'Active'));
-    } else if (filter === 'Inactive') {
-      setRows((prevRows) => prevRows.filter((row) => row.status === 'Inactive'));
+    if (filter === "Active") {
+      setRows((prevRows) => prevRows.filter((row) => row.status === "Active"));
+    } else if (filter === "Inactive") {
+      setRows((prevRows) =>
+        prevRows.filter((row) => row.status === "Inactive")
+      );
     }
   };
 
   const handleExport = () => {
     const doc = new jsPDF();
     rows.forEach((row, index) => {
-      const yPos = 10 + (index * 10);
+      const yPos = 10 + index * 10;
       doc.text(`${row.EmployeeName} - ${row.quote}`, 10, yPos);
     });
-    doc.save('employee_table.pdf');
+    doc.save("employee_table.pdf");
   };
 
   const handleSearch = (e) => {
@@ -156,9 +186,9 @@ const DesignerActivities = () => {
   };
 
   const filteredRows = rows.filter((row) => {
-    const name = row.EmployeeName ? row.EmployeeName.toLowerCase() : '';
-    const status = row.status ? row.status.toLowerCase() : '';
-    if (filter === 'All') {
+    const name = row.EmployeeName ? row.EmployeeName.toLowerCase() : "";
+    const status = row.status ? row.status.toLowerCase() : "";
+    if (filter === "All") {
       return name.includes(searchTerm.toLowerCase());
     } else {
       return (
@@ -170,11 +200,15 @@ const DesignerActivities = () => {
 
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-        <div className='w-[3vw]'>
-          <img src="/Sales/Salespages/Designer.png" className="image-hover-effect" alt="Leave" />
+      <div className="flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect">
+        <div className="w-[3vw]">
+          <img
+            src="/Sales/Salespages/Designer.png"
+            className="image-hover-effect"
+            alt="Leave"
+          />
         </div>
-        <h1 className=' text-[2vw] text-[#E9278E]'>Designer Activities</h1>
+        <h1 className=" text-[2vw] text-[#E9278E]">Designer Activities</h1>
       </div>
       <div className="h-[50vw]">
         <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
@@ -194,13 +228,22 @@ const DesignerActivities = () => {
             <option value="Active">Active</option>
             <option value="Inactive">Inactive</option>
           </select>
-          <button className="w-[2vw] bg-orange-500 mx-[0.5vw] rounded-md" onClick={handleRefresh}>
+          <button
+            className="w-[2vw] bg-orange-500 mx-[0.5vw] rounded-md"
+            onClick={handleRefresh}
+          >
             <img src="/HRM/refresh.png" alt="" />
           </button>
-          <button className="w-[2vw] bg-red-500 mx-[0.5vw] rounded-md" onClick={handleFilter}>
+          <button
+            className="w-[2vw] bg-red-500 mx-[0.5vw] rounded-md"
+            onClick={handleFilter}
+          >
             <img src="/HRM/filter.png" alt="" />
           </button>
-          <button className="w-[2vw] bg-sky-500 mx-[0.5vw] rounded-md" onClick={handleExport}>
+          <button
+            className="w-[2vw] bg-sky-500 mx-[0.5vw] rounded-md"
+            onClick={handleExport}
+          >
             <img src="/HRM/export.png" alt="" />
           </button>
         </div>
@@ -213,12 +256,11 @@ const DesignerActivities = () => {
               <th className="border p-[0.5vw] text-[1vw]">Company Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Customer Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Start Time</th>
-              <th className="border p-[0.5vw] text-[1vw]">Length</th>
-              <th className="border p-[0.5vw] text-[1vw]">Width</th>
+              <th className="border p-[0.5vw] text-[1vw]">Length & Width</th>
+              <th className="border p-[0.5vw] text-[1vw]">Area</th>
               <th className="border p-[0.5vw] text-[1vw]">Material</th>
               <th className="border p-[0.5vw] text-[1vw]">Distance</th>
               <th className="border p-[0.5vw] text-[1vw]">Status</th>
-              <th className="border p-[0.5vw] text-[1vw]">Width</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
@@ -228,24 +270,29 @@ const DesignerActivities = () => {
                 <td className="p-[1.5vw]">{index + 1}</td>
                 <td className="p-[1.5vw]">{row.EntryDate}</td>
                 <td className="p-[1.5vw]">{row.EmployeeName}</td>
-                <td className='p-[1.5vw]'>{row.CompanyName}</td>
-                <td className='p-[1.5vw]'>{row.CustomerName}</td>
-                <td className='p-[1.5vw]'>{row.StartTime}</td>
-                <td className='p-[1.5vw]'>{row.length}</td>
-                <td className='p-[1.5vw]'>{row.width}</td>
-                <td className='p-[1.5vw]'>{row.material}</td>
-                <td className='p-[1.5vw]'>{row.distance}</td>
-                <td className='p-[1.5vw]'>{row.status}</td>
-                <td className='p-[1.5vw]'>{row.quote}</td>
+                <td className="p-[1.5vw]">{row.CompanyName}</td>
+                <td className="p-[1.5vw]">{row.CustomerName}</td>
+                <td className="p-[1.5vw]">{row.StartTime}</td>
+                <td className="p-[1.5vw]">
+                  {row.dimensions.map((dim, i) => (
+                    <div key={i} className="bg-gray-400 my-[10px] p-[10px]">
+                      Length: {dim.length}, Width: {dim.width}
+                    </div>
+                  ))}
+                </td>
+                <td className="p-[1.5vw]">{row.quote}</td>
+                <td className="p-[1.5vw]">{row.material}</td>
+                <td className="p-[1.5vw]">{row.distance}</td>
+                <td className="p-[1.5vw]">{row.status}</td>
                 <td className="p-[0.1vw]">
                   <button
-                    className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
+                    className="hover p-2 rounded-full mb-2 mr-[0.6vw]"
                     onClick={() => handleEdit(index)}
                   >
                     <img src="/HRM/edit.png" className="w-[1.4vw]" alt="" />
                   </button>
                   <button
-                    className="hover:bg-red-500 p-2 rounded-full"
+                    className="hover p-2 rounded-full"
                     onClick={() => handleDelete(index)}
                   >
                     <img src="/HRM/Trash.png" className="w-[1.4vw]" alt="" />
@@ -261,8 +308,9 @@ const DesignerActivities = () => {
         <div className="absolute bottom-4 left-4">
           <button
             className="w-[4vw] p-2 rounded"
-            onClick={toggleFormVisibility}>
-            <img src="/HRM/form.png" className='w-[2vw]' alt="" />
+            onClick={toggleFormVisibility}
+          >
+            <img src="/HRM/form.png" className="w-[2vw]" alt="" />
           </button>
         </div>
       )}
@@ -274,12 +322,15 @@ const DesignerActivities = () => {
               className="hover:bg-red-500 h-[2vw] shadow-lg rounded-md text-white p-[0.3vw]"
               onClick={toggleFormVisibility}
             >
-              <img src="/HRM/close.png" className='w-[2vw]' alt="" />
+              <img src="/HRM/close.png" className="w-[2vw]" alt="" />
             </button>
           </div>
           <form onSubmit={handleSubmit} className="overflow-y-auto p-[1vw]">
             <div className="mb-[0.3vw]">
-              <label htmlFor="EntryDate" className="block mb-[0.3vw] text-[1vw]">
+              <label
+                htmlFor="EntryDate"
+                className="block mb-[0.3vw] text-[1vw]"
+              >
                 Entry Date:
               </label>
               <input
@@ -292,7 +343,10 @@ const DesignerActivities = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="EmployeeName" className="block mb-[0.3vw] text-[1vw]">
+              <label
+                htmlFor="EmployeeName"
+                className="block mb-[0.3vw] text-[1vw]"
+              >
                 Employee Name:
               </label>
               <input
@@ -305,7 +359,10 @@ const DesignerActivities = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="CompanyName" className="block mb-[0.3vw] text-[1vw]">
+              <label
+                htmlFor="CompanyName"
+                className="block mb-[0.3vw] text-[1vw]"
+              >
                 Company Name:
               </label>
               <input
@@ -318,7 +375,10 @@ const DesignerActivities = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="CustomerName" className="block mb-[0.3vw] text-[1vw]">
+              <label
+                htmlFor="CustomerName"
+                className="block mb-[0.3vw] text-[1vw]"
+              >
                 Customer Name:
               </label>
               <input
@@ -331,7 +391,10 @@ const DesignerActivities = () => {
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="StartTime" className="block mb-[0.3vw] text-[1vw]">
+              <label
+                htmlFor="StartTime"
+                className="block mb-[0.3vw] text-[1vw]"
+              >
                 Start Time:
               </label>
               <input
@@ -343,32 +406,48 @@ const DesignerActivities = () => {
                 className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
               />
             </div>
+
             <div className="mb-[0.3vw]">
-              <label htmlFor="length" className="block mb-[0.3vw] text-[1vw]">
-                Length:
-              </label>
-              <input
-                type="text"
-                id="length"
-                name="length"
-                value={formData.length}
-                onChange={handleChange}
-                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
-              />
+              <label className="block mb-[0.3vw] text-[1vw]">Dimensions:</label>
+              {Array.isArray(formData.dimensions) &&
+                formData.dimensions.map((dimension, index) => (
+                  <div key={index} className="flex mb-[0.3vw]">
+                    <input
+                      type="text"
+                      placeholder="Length"
+                      name={`length-${index}`}
+                      value={dimension.length}
+                      onChange={(e) =>
+                        handleDimensionChange(e, index, "length")
+                      }
+                      className="border p-[0.5vw] rounded w-[10vw] h-[2.5vw] mr-[0.5vw]"
+                    />
+                    <input
+                      type="text"
+                      placeholder="Width"
+                      name={`width-${index}`}
+                      value={dimension.width}
+                      onChange={(e) => handleDimensionChange(e, index, "width")}
+                      className="border p-[0.5vw] rounded w-[10vw] h-[2.5vw] mr-[0.5vw]"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeDimensionRow(index)}
+                      className="bg-red-500 text-white p-[0.5vw] rounded"
+                    >
+                      -
+                    </button>
+                  </div>
+                ))}
+              <button
+                type="button"
+                onClick={addDimensionRow}
+                className="bg-green-500 text-white p-[0.5vw] rounded"
+              >
+                +
+              </button>
             </div>
-            <div className="mb-[0.3vw]">
-              <label htmlFor="width" className="block mb-[0.3vw] text-[1vw]">
-                Width:
-              </label>
-              <input
-                type="text"
-                id="width"
-                name="width"
-                value={formData.width}
-                onChange={handleChange}
-                className="border p-[0.5vw] rounded w-[22vw] h-[2.5vw]"
-              />
-            </div>
+
             <div className="mb-[0.3vw]">
               <label htmlFor="material" className="block mb-[0.3vw] text-[1vw]">
                 Material:
@@ -382,7 +461,7 @@ const DesignerActivities = () => {
               >
                 <option value="Material1">Iron</option>
                 <option value="Material2">Wood</option>
-                <option value="Material2">Aluminium</option>
+                <option value="Material3">Aluminium</option>
               </select>
             </div>
             <div className="mb-[0.3vw]">
