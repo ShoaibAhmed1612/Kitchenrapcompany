@@ -1,55 +1,51 @@
-import React, { useState, useEffect } from "react";
-import { jsPDF } from "jspdf";
-import { Link } from "react-router-dom";
+import React, { useState, useEffect } from 'react';
+import { jsPDF } from 'jspdf';
 
 const Leads = () => {
-  const [formData, setFormData] = useState({
-    Branch: "",
-    Leadname: "",
-    AssignedTo: "",
-    expiryDate: "",
-    Addedby: "",
-    status: "",
+  const [formData, setFormData] = useState(() => {
+    const savedData = localStorage.getItem('formData');
+    return savedData
+      ? JSON.parse(savedData)
+      : {
+        BranchName: "",
+        LeadName: "",
+        Assignedto: "",
+        ExpieryDate: "",
+        Addedby: "",
+        Comments: "",
+        Status: "",
+        };
   });
 
   const [isFormVisible, setFormVisible] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
-  const [srNo, setSrNo] = useState(1);
-  const [rows, setRows] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("All");
+  const [srNo, setSrNo] = useState(() => {
+    const savedSrNo = localStorage.getItem('srNo');
+    return savedSrNo ? parseInt(savedSrNo) : 1;
+  });
+  const [rows, setRows] = useState(() => {
+    const savedRows = localStorage.getItem('rows');
+    return savedRows ? JSON.parse(savedRows) : [];
+  });
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filter, setFilter] = useState('All');
 
   useEffect(() => {
-    const savedData = localStorage.getItem("formData");
-    if (savedData) {
-      setFormData(JSON.parse(savedData));
-    }
-  }, []);
-
-  useEffect(() => {
-    localStorage.setItem("formData", JSON.stringify(formData));
+    localStorage.setItem('formData', JSON.stringify(formData));
   }, [formData]);
 
   useEffect(() => {
-    const savedRows = localStorage.getItem("rows");
-    if (savedRows) {
-      setRows(JSON.parse(savedRows));
-    }
-  }, []);
+    localStorage.setItem('rows', JSON.stringify(rows));
+  }, [rows]);
 
   useEffect(() => {
-    localStorage.setItem("rows", JSON.stringify(rows));
-  }, [rows]);
+    localStorage.setItem('srNo', srNo.toString());
+  }, [srNo]);
 
   const addEmployee = () => {
     const newEmployee = {
       id: srNo,
-      Branch: formData.Branch,
-      Leadname: formData.Leadname,
-      AssignedTo: formData.AssignedTo,
-      expiryDate: formData.expiryDate,
-      Addedby: formData.Addedby,
-      status: formData.status,
+      name: `Employee ${srNo}`,
     };
     setRows([...rows, newEmployee]);
     setSrNo(srNo + 1);
@@ -74,16 +70,18 @@ const Leads = () => {
       });
       setEditIndex(null);
     } else {
-      addEmployee();
+      setRows((prevRows) => [...prevRows, formData]);
     }
-
     setFormData({
-      Branch: "",
-      Leadname: "",
-      AssignedTo: "",
-      expiryDate: "",
+      ReceiptDate: "",
       Addedby: "",
-      status: "",
+      BranchName: "",
+      Receiptno: "",
+      PaymentMethod: "",
+      FromAccount: "",
+      ToAccount: "",
+      TotalAmount: "",
+      Description: "",
     });
 
     setFormVisible(false);
@@ -109,22 +107,20 @@ const Leads = () => {
   };
 
   const handleFilter = () => {
-    if (filter === "Active") {
-      setRows((prevRows) => prevRows.filter((row) => row.status === "Active"));
-    } else if (filter === "Inactive") {
-      setRows((prevRows) =>
-        prevRows.filter((row) => row.status === "Inactive")
-      );
+    if (filter === 'Active') {
+      setRows((prevRows) => prevRows.filter((row) => row.status === 'Active'));
+    } else if (filter === 'Inactive') {
+      setRows((prevRows) => prevRows.filter((row) => row.status === 'Inactive'));
     }
   };
 
   const handleExport = () => {
     const doc = new jsPDF();
     rows.forEach((row, index) => {
-      const yPos = 10 + index * 10;
-      doc.text(`${row.Leadname} - ${row.status}`, 10, yPos);
+      const yPos = 10 + (index * 10);
+      doc.text(`${row.name} - ${row.code}`, 10, yPos);
     });
-    doc.save("employee_table.pdf");
+    doc.save('employee_table.pdf');
   };
 
   const handleSearch = (e) => {
@@ -132,52 +128,33 @@ const Leads = () => {
   };
 
   const filteredRows = rows.filter((row) => {
-    if (filter === "All") {
-      return (
-        row.Leadname &&
-        row.Leadname.toLowerCase().includes(searchTerm.toLowerCase())
-      );
+    const Branchname = row.BranchName ? row.BranchName.toLowerCase() : '';
+    const status = row.status ? row.status.toLowerCase() : '';
+
+    if (filter === 'All') {
+      return name.includes(searchTerm.toLowerCase());
     } else {
       return (
-        row.status &&
-        row.status === filter &&
-        row.Leadname &&
-        row.Leadname.toLowerCase().includes(searchTerm.toLowerCase())
+        status === filter.toLowerCase() &&
+        name.includes(searchTerm.toLowerCase())
       );
     }
   });
 
-  const handleEstimateClick = (rowData) => {
-    const form = document.createElement("form");
-    form.method = "POST";
-    form.action = "/CRM/Estimates";
-    const hiddenInput = document.createElement("input");
-    hiddenInput.type = "hidden";
-    hiddenInput.name = "leadData";
-    hiddenInput.value = JSON.stringify(rowData);
-    form.appendChild(hiddenInput);
-    document.body.appendChild(form);
-    form.submit();
-  };
-
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-      <div className="flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect">
-        <div className="w-[3vw]">
-          <img
-            src="/CRM/pages/Leads.png"
-            className="image-hover-effect"
-            alt="Leave"
-          />
-        </div>
-        <h1 className=" text-[2vw] text-[#E9278E]">Leads</h1>
+    <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
+      <div className='w-[3vw]'>
+      <img src="/CRM/pages/Leads.png" className="image-hover-effect" alt="Leave" />
+      </div>
+      <h1 className=' text-[2vw] text-[#E9278E]'>Leads</h1>
       </div>
       <div className="h-[50vw]">
-        <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row overflow-y-auto px-[2vw] items-center">
+        <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
           <input
             className="p-[0.3vw] w-[18vw] text-[1vw] rounded-md mx-[1vw]"
             type="text"
-            placeholder="Search by name"
+            placeholder="Search by Branch name"
             value={searchTerm}
             onChange={handleSearch}
           />
@@ -208,40 +185,40 @@ const Leads = () => {
           >
             <img src="/HRM/export.png" alt="" />
           </button>
-          <button
-          className=" p-[0.4vw] bg-gray-500 mx-[0.5vw] rounded-md"
-          onClick={handleEstimateClick} // This is the Estimate button
-        >
-          Estimate
-        </button>
         </div>
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
             <tr className="w-[80vw]">
-              <th className="border p-[0.5vw] text-[1vw]">Sr no</th>
-              <th className="border p-[0.5vw] text-[1vw]">Branch</th>
+              <th className="border p-[0.5vw] text-[1vw]">RFQ no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Branch Name</th>
               <th className="border p-[0.5vw] text-[1vw]">Lead Name</th>
-              <th className="border p-[0.5vw] text-[1vw]">Assigned To</th>
-              <th className="border p-[0.5vw] text-[1vw]">Expiry Date</th>
-              <th className="border p-[0.5vw] text-[1vw]">Added By</th>
+              <th className="border p-[0.5vw] text-[1vw]">Assigned to</th>
+              <th className="border p-[0.5vw] text-[1vw]">Expiery Date</th>
+              <th className="border p-[0.5vw] text-[1vw]">Added by</th>
+              <th className="border p-[0.5vw] text-[1vw]">Comments</th>
               <th className="border p-[0.5vw] text-[1vw]">Status</th>
+              <th className="border p-[0.5vw] text-[1vw]">Send</th>
               <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
           <tbody className="rounded-lg bg-gray-100 w-[80vw] text-center">
             {filteredRows.map((row, index) => (
               <tr key={index}>
-                <td>{index + 1}</td>
-                <td>{row.Branch}</td>
-                <td>{row.Leadname}</td>
-                <td>{row.AssignedTo}</td>
-                <td>{row.expiryDate}</td>
-                <td>{row.Addedby}</td>
-                <td>{row.status}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{index + 1}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.BranchName}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.LeadName}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Assignedto}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.ExpieryDate}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Addedby}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Comments}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Status}</td>
+                <td className="p-[0.1vw]">
+                  <button className='bg-gray-300 p-[0.5vw] rounded-[0.3vw] text-[0.8vw]'>Estimate</button>
+                </td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
-                    onClick={() => handleEstimateClick(row)}
+                    onClick={() => handleEdit(index)}
                   >
                     <img src="/HRM/edit.png" className="w-[1.4vw]" alt="" />
                   </button>
@@ -259,119 +236,112 @@ const Leads = () => {
       </div>
 
       {!isFormVisible && (
-        <div className="absolute bottom-4 left-4">
-          <button
-            className="w-[4vw] text-white p-2 rounded"
-            onClick={toggleFormVisibility}
-          >
-            <img src="/HRM/form.png" alt="" />
+        <div className="absolute bottom-[1vw] left-[1vw]">
+          <button className="p-[1vw]  rounded" onClick={toggleFormVisibility}>
+            <img src="/HRM/form.png" className="w-[3vw]" alt="" />
           </button>
         </div>
       )}
 
       {isFormVisible && (
-        <div className="w-[30vw] bg-white shadow-lg absolute right-0 z-10 top-0 overflow-y-auto rounded-lg ml-4 h-[35vw]">
+        <div className="w-[26vw] bg-white shadow-2xl absolute right-0 z-10 top-[0vw] overflow-y-auto rounded-lg ml-4 h-[32vw]">
           <div className="flex justify-between p-4">
             <button
-              className="hover:bg-red-500  bg-white shadow-lg rounded-[0.7vw] text-white p-[1vw]"
+              className="hover:bg-red-500  shadow-lg rounded-md text-white p-[0.3vw]"
               onClick={toggleFormVisibility}
             >
-              <img src="/HRM/close.png" className="w-[1.4vw]" alt="" />
+              <img src="/HRM/close.png" className="w-[2vw]" alt="" />
             </button>
           </div>
-          <form onSubmit={handleSubmit} className="overflow-y-auto p-[1vw] ">
+          <form onSubmit={handleSubmit} className="overflow-y-auto  p-[1vw] ">
             <div className="mb-[0.3vw]">
-              {/* Branch name input field */}
-              <label htmlFor="Branch" className="block mb-1">
-                Branch:
-              </label>
+              <h1>Branch Name:</h1>
               <input
                 type="text"
-                id="Branch"
-                name="Branch"
-                value={formData.Branch}
+                name="BranchName"
+                value={formData.BranchName}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Lead Name input field */}
-              <label htmlFor="Leadname" className="block mb-1">
-                Lead Name:
-              </label>
+              <h1>Lead Name:</h1>
               <input
                 type="text"
-                id="Leadname"
-                name="Leadname"
-                value={formData.Leadname}
+                name="LeadName"
+                value={formData.LeadName}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Assigned To input field */}
-              <label htmlFor="AssignedTo" className="block mb-1">
-                Assigned To:
-              </label>
+              <h1>Assigned to:</h1>
               <input
                 type="text"
-                id="AssignedTo"
-                name="AssignedTo"
-                value={formData.AssignedTo}
+                name="Assignedto"
+                value={formData.Assignedto}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Expiry Date input field */}
-              <label htmlFor="expiryDate" className="block mb-1">
-                Expiry Date:
-              </label>
+              <h1>Phone no:</h1>
+              <input
+                type="number"
+                name="Phoneno"
+                value={formData.Phoneno}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <h1>Expiery Date:</h1>
               <input
                 type="date"
-                id="expiryDate"
-                name="expiryDate"
-                value={formData.expiryDate}
-                onChange={(e) =>
-                  setFormData({ ...formData, expiryDate: e.target.value })
-                }
-                className="border p-2 rounded w-full"
-                placeholder="MM/DD/YYYY"
+                name="ExpieryDate"
+                value={formData.ExpieryDate}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Added By input field */}
-              <label htmlFor="Addedby" className="block mb-1">
-                Added By:
-              </label>
+              <h1>Added by:</h1>
               <input
                 type="text"
-                id="Addedby"
                 name="Addedby"
                 value={formData.Addedby}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              {/* Status input field */}
-              <label htmlFor="status" className="block mb-1">
-                Status:
-              </label>
-              <select
-                className="p-[1vw] text-[1vw] w-[13vw] rounded-md border"
-                id="status"
-                name="status"
-                value={formData.status}
+              <h1>Comments:</h1>
+              <input
+                type="text"
+                name="Comments"
+                value={formData.Comments}
                 onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+            </div>
+              <div className="mb-[0.3vw]">
+              <h1>Status:</h1>
+              <select
+                name="Status"
+                value={formData.Status}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               >
-                <option value="Active">Active</option>
-                <option value="Inactive">Inactive</option>
+                <option value="Select Status">Select Status</option>
+                <option value="Pending">Pending</option>
+                <option value="Rejected Quote">Rejected Quote</option>
+                <option value="Placed Order">Placed Order</option>
+                
               </select>
             </div>
             <button
               type="submit"
-              className="bg-[#E9278E] text-white p-2 rounded w-full"
+              className="bg-[#E9278E] mt-[0.5vw] text-white p-2 rounded w-full"
             >
               {editIndex !== null ? "Edit" : "Add"}
             </button>
@@ -379,7 +349,7 @@ const Leads = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 export default Leads;

@@ -222,15 +222,15 @@ const Header = () => {
                   </Link>
                 </li>
                 <li className="py-[0.3vw] my-[0.2vw]">
-                  <Link to="/CRM/Preleads" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/CRM/Preleads" )}`}>
-                    <img src="/CRM/pages/prelieads.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
-                    <h1>PreLeads</h1>
-                  </Link>
-                </li>
-                <li className="py-[0.3vw] my-[0.2vw]">
                   <Link to="/CRM/Leads" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/CRM/Leads" )}`}>
                     <img src="/CRM/pages/Leads.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
                     <h1>Leads</h1>
+                  </Link>
+                </li>
+                <li className="py-[0.3vw] my-[0.2vw]">
+                  <Link to="/CRM/Preleads" className={`text-[.8vw] flex flex-row items-center gap-[0.2vw] hover:text-[#e9278e] ${isLinkActive( "/CRM/Preleads" )}`}>
+                    <img src="/CRM/pages/prelieads.png" className=" pl-[0.3vw] w-[1.5vw]" alt="" />{" "}
+                    <h1>PreLeads</h1>
                   </Link>
                 </li>
                 <li className="py-[0.3vw] my-[0.2vw]">

@@ -7,23 +7,23 @@ const PreLeads = () => {
     return savedData
       ? JSON.parse(savedData)
       : {
-          RFQNo: "", // Changed from 'id' to 'RFQNo'
-          contactDate: "",
-          name: "",
-          email: "",
-          PhoneNo: "",
-          Source: "",
-          City: "",
-          Address: "",
-          BranchName: "",
-          status: "",
+        ContactDate: "",
+        Name: "",
+        Email: "",
+        Receiptno: "",
+        Phoneno: "",
+        SourceMethod: "",
+        City: "",
+        Address: "",
+        Status: "",
         };
   });
+
   const [isFormVisible, setFormVisible] = useState(false);
   const [editIndex, setEditIndex] = useState(null);
-  const [RFQNo, setRFQNo] = useState(() => {
-    const savedRFQNo = localStorage.getItem('RFQNo');
-    return savedRFQNo ? parseInt(savedRFQNo) : 1;
+  const [srNo, setSrNo] = useState(() => {
+    const savedSrNo = localStorage.getItem('srNo');
+    return savedSrNo ? parseInt(savedSrNo) : 1;
   });
   const [rows, setRows] = useState(() => {
     const savedRows = localStorage.getItem('rows');
@@ -41,16 +41,16 @@ const PreLeads = () => {
   }, [rows]);
 
   useEffect(() => {
-    localStorage.setItem('RFQNo', RFQNo.toString());
-  }, [RFQNo]);
+    localStorage.setItem('srNo', srNo.toString());
+  }, [srNo]);
 
-  const addLead = () => { // Renamed function to addLead
-    const newLead = {
-      RFQNo: RFQNo, // Changed from 'id' to 'RFQNo'
-      name: formData.name, // Using name from form data
+  const addEmployee = () => {
+    const newEmployee = {
+      id: srNo,
+      name: `Employee ${srNo}`,
     };
-    setRows([...rows, newLead]);
-    setRFQNo(RFQNo + 1);
+    setRows([...rows, newEmployee]);
+    setSrNo(srNo + 1);
   };
 
   const handleChange = (e) => {
@@ -72,22 +72,23 @@ const PreLeads = () => {
       });
       setEditIndex(null);
     } else {
-      addLead(); // Call addLead function to add lead
+      setRows((prevRows) => [...prevRows, formData]);
     }
     setFormData({
-      RFQNo: "", // Changed from 'id' to 'RFQNo'
-      contactDate: "",
-      name: "",
-      email: "",
-      PhoneNo: "",
-      Source: "",
-      City: "",
-      Address: "",
-      BranchName: "",
-      status: "",
+      ContactDate: "",
+        Name: "",
+        Email: "",
+        Receiptno: "",
+        Phoneno: "",
+        SourceMethod: "",
+        City: "",
+        Address: "",
+        Status: "",
     });
+
     setFormVisible(false);
   };
+
   const handleDelete = (index) => {
     setRows((prevRows) => prevRows.filter((_, i) => i !== index));
   };
@@ -141,21 +142,21 @@ const PreLeads = () => {
       );
     }
   });
-  
+
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
-      <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
-        <div className='w-[3vw]'>
-          <img src="/CRM/pages/prelieads.png" className="image-hover-effect" alt="Leave" />
-        </div>
-        <h1 className=' text-[2vw] text-[#E9278E]'>Pre Leads</h1>
+    <div className='flex flex-row m-[1vw] gap-[1vw] items-center image-hover-effect'>
+      <div className='w-[3vw]'>
+      <img src="/CRM/pages/prelieads.png" className="image-hover-effect" alt="Leave" />
+      </div>
+      <h1 className=' text-[2vw] text-[#E9278E]'>Pre Leads</h1>
       </div>
       <div className="h-[50vw]">
-        <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row overflow-y-auto px-[2vw] items-center">
+        <div className="bg-gray-400 w-[80vw] h-[3vw] flex flex-row px-[2vw] items-center">
           <input
             className="p-[0.3vw] w-[18vw] text-[1vw] rounded-md mx-[1vw]"
             type="text"
-            placeholder="Search by name"
+            placeholder="Search by Branch name"
             value={searchTerm}
             onChange={handleSearch}
           />
@@ -189,53 +190,45 @@ const PreLeads = () => {
         </div>
         <table className="w-[80vw] overflow-y-auto">
           <thead className="bg-gray-300 w-[80vw]">
-            <tr className="w-[70vw]">
-              <th className="border p-[0.2vw] text-[0.8vw]">RFQ no</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Contact date</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Name</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Email</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Phone no</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Source</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">City</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Address</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Branch Name</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Status</th>
-              <th className="border p-[0.2vw] text-[0.8vw]">Actions</th>
+            <tr className="w-[80vw]">
+              <th className="border p-[0.5vw] text-[1vw]">RFQ no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Contact Date</th>
+              <th className="border p-[0.5vw] text-[1vw]">Name</th>
+              <th className="border p-[0.5vw] text-[1vw]">Email</th>
+              <th className="border p-[0.5vw] text-[1vw]">Phone no</th>
+              <th className="border p-[0.5vw] text-[1vw]">Source Method</th>
+              <th className="border p-[0.5vw] text-[1vw]">City</th>
+              <th className="border p-[0.5vw] text-[1vw]">Address</th>
+              <th className="border p-[0.5vw] text-[1vw]">Branch Name</th>
+              <th className="border p-[0.5vw] text-[1vw]">Status</th>
+              <th className="border p-[0.5vw] text-[1vw]">Actions</th>
             </tr>
           </thead>
           <tbody className="rounded-lg bg-gray-100 w-[80vw] text-center">
-            {rows.map((row, index) => (
-              <tr className="text-[0.8vw]" key={index}>
-                <td className="text-[0.8vw] p-[0.4vw]">{row.id}</td>
-                <td className="text-[0.8vw] p-[0.4vw]">{row.contactDate}</td>
-                <td className="text-[0.8vw] p-[0.4vw]">{row.name}</td>
-                <td className="text-[0.8vw] p-[0.2vw]">{row.email}</td>
-                <td className="text-[0.8vw] p-[0.2vw]">{row.PhoneNo}</td>
-                <td className="text-[0.8vw] p-[0.2vw]">{row.Source}</td>
-                <td className="text-[0.8vw] p-[0.2vw]">{row.City}</td>
-                <td className="text-[0.8vw] p-[0.2vw]">{row.Address}</td>
-                <td className="text-[0.8vw] p-[0.2vw]">{row.BranchName}</td>
-                <td className="text-[0.8vw] p-[0.5vw]">{row.status}</td>
-                <td className="text-[0.8vw] p-[0.2vw]">
+            {filteredRows.map((row, index) => (
+              <tr key={index}>
+                <td className="text-[0.8vw] p-[0.4vw]">{index + 1}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.ContactDate}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Name}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Email}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Phoneno}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.SourceMethod}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.City}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Address}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.BranchName}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Status}</td>
+                <td className="p-[0.1vw]">
                   <button
-                    className="hover:bg-blue-500 p-[0.3vw] rounded-full mb-2 mr-[0.2vw]"
+                    className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
                     onClick={() => handleEdit(index)}
                   >
-                    <img
-                      src="/HRM/edit.png"
-                      className="w-[1.4vw]"
-                      alt=""
-                    />
+                    <img src="/HRM/edit.png" className="w-[1.4vw]" alt="" />
                   </button>
                   <button
-                    className="hover:bg-red-500 p-[0.3vw] rounded-full"
+                    className="hover:bg-red-500 p-2 rounded-full"
                     onClick={() => handleDelete(index)}
                   >
-                    <img
-                      src="/HRM/Trash.png"
-                      className="w-[1.4vw]"
-                      alt=""
-                    />
+                    <img src="/HRM/Trash.png" className="w-[1.4vw]" alt="" />
                   </button>
                 </td>
               </tr>
@@ -245,151 +238,120 @@ const PreLeads = () => {
       </div>
 
       {!isFormVisible && (
-        <div className="absolute bottom-4 left-4">
-          <button
-            className="w-[4vw] text-white p-2 rounded"
-            onClick={toggleFormVisibility}
-          >
-            <img src="/HRM/form.png" alt="" />
+        <div className="absolute bottom-[1vw] left-[1vw]">
+          <button className="p-[1vw]  rounded" onClick={toggleFormVisibility}>
+            <img src="/HRM/form.png" className="w-[3vw]" alt="" />
           </button>
         </div>
       )}
 
       {isFormVisible && (
-        <div className="w-[30vw] bg-white shadow-lg absolute right-0 z-10 top-0 overflow-y-auto rounded-lg ml-4 h-[35vw]">
-          <div className="flex justify-between p-[0.2vw]">
+        <div className="w-[26vw] bg-white shadow-2xl absolute right-0 z-10 top-[0vw] overflow-y-auto rounded-lg ml-4 h-[32vw]">
+          <div className="flex justify-between p-4">
             <button
-              className="hover:bg-red-500  bg-white shadow-lg rounded-[0.7vw] text-white p-[1vw]"
+              className="hover:bg-red-500  shadow-lg rounded-md text-white p-[0.3vw]"
               onClick={toggleFormVisibility}
             >
-              <img src="/HRM/close.png" className="w-[1.4vw]" alt="" />
+              <img src="/HRM/close.png" className="w-[2vw]" alt="" />
             </button>
           </div>
-          <form onSubmit={handleSubmit} className="overflow-y-auto  p-[1vw]  ">
+          <form onSubmit={handleSubmit} className="overflow-y-auto  p-[1vw] ">
             <div className="mb-[0.3vw]">
-              <label htmlFor="contactDate" className="block mb-1">
-                Contact Date:
-              </label>
+              <h1>Contact Date:</h1>
               <input
                 type="date"
-                id="contactDate"
-                name="contactDate"
-                value={formData.contactDate}
+                name="ContactDate"
+                value={formData.ContactDate}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="name" className="block mb-1">
-                Name:
-              </label>
+              <h1>Added by:</h1>
               <input
                 type="text"
-                id="name"
-                name="name"
-                value={formData.name}
+                name="Name"
+                value={formData.Name}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="email" className="block mb-1">
-                Email:
-              </label>
+              <h1>Email:</h1>
               <input
                 type="email"
-                id="email"
-                name="email"
-                value={formData.email}
+                name="Email"
+                value={formData.Email}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="PhoneNo" className="block mb-1">
-                Phone No:
-              </label>
+              <h1>Phone no:</h1>
               <input
-                type="tel"
-                id="PhoneNo"
-                name="PhoneNo"
-                value={formData.PhoneNo}
+                type="number"
+                name="Phoneno"
+                value={formData.Phoneno}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="Source" className="block mb-1">
-                Source:
-              </label>
-              <select
-                id="Source"
-                name="Source"
-                value={formData.Source}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
-              >
-                <option value="">Select Source</option>
-                <option value="Option 1">Option 1</option>
-                <option value="Option 2">Option 2</option>
-              </select>
-            </div>
-            <div className="mb-[0.3vw]">
-              <label htmlFor="City" className="block mb-1">
-                City:
-              </label>
+              <h1>Source Method:</h1>
               <input
                 type="text"
-                id="City"
+                name="SourceMethod"
+                value={formData.SourceMethod}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <h1>City:</h1>
+              <input
+                type="text"
                 name="City"
                 value={formData.City}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="Address" className="block mb-1">
-                Address:
-              </label>
-              <textarea
-                id="Address"
+              <h1>Address:</h1>
+              <input
+                type="text"
                 name="Address"
                 value={formData.Address}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
-              ></textarea>
-            </div>
-            <div className="mb-[0.3vw]">
-              <label htmlFor="BranchName" className="block mb-1">
-                Branch Name:
-              </label>
-              <input
-                type="text"
-                id="BranchName"
-                name="BranchName"
-                value={formData.BranchName}
-                onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               />
             </div>
             <div className="mb-[0.3vw]">
-              <label htmlFor="status" className="block mb-1">
-                Status:
-              </label>
-              <select
-                id="status"
-                name="status"
-                value={formData.status}
+              <h1>Branch Name:</h1>
+              <input
+                type="text"
+                name="BranchName"
+                value={formData.BranchName}
                 onChange={handleChange}
-                className="border p-2 rounded w-full"
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
+              />
+              <div className="mb-[0.3vw]">
+              <h1>Status:</h1>
+              <select
+                name="Status"
+                value={formData.Status}
+                onChange={handleChange}
+                className="p-[0.7vw] text-[1vw] w-[22vw] rounded-md border"
               >
+                <option value="Select Status">Select Status</option>
                 <option value="Active">Active</option>
                 <option value="Inactive">Inactive</option>
               </select>
             </div>
+            </div>
             <button
               type="submit"
-              className="bg-[#E9278E] text-white p-2 rounded w-full"
+              className="bg-[#E9278E] mt-[0.5vw] text-white p-2 rounded w-full"
             >
               {editIndex !== null ? "Edit" : "Add"}
             </button>
@@ -397,7 +359,7 @@ const PreLeads = () => {
         </div>
       )}
     </div>
-  );
-};
+  )
+}
 
 export default PreLeads;

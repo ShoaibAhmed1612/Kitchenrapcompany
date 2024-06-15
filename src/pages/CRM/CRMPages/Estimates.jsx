@@ -2,7 +2,10 @@ import React, { useState, useEffect } from "react";
 import { jsPDF } from "jspdf";
 
 const Estimates = () => {
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState(() => {
+    const savedData = localStorage.getItem('formData');
+    return savedData ? JSON.parse(savedData)
+    : {
     EntryDate: "",
     Estimate: "",
     Customer: "",
@@ -10,170 +13,132 @@ const Estimates = () => {
     Total: "",
     EstimateDate: "",
     DueDate: "",
-    status: "Active", // Default status
+    status: "", 
+  };
+});
+
+const [isFormVisible, setFormVisible] = useState(false);
+const [editIndex, setEditIndex] = useState(null);
+const [srNo, setSrNo] = useState(() => {
+  const savedSrNo = localStorage.getItem('srNo');
+  return savedSrNo ? parseInt(savedSrNo) : 1;
+});
+const [rows, setRows] = useState(() => {
+  const savedRows = localStorage.getItem('rows');
+  return savedRows ? JSON.parse(savedRows) : [];
+});
+const [searchTerm, setSearchTerm] = useState('');
+const [filter, setFilter] = useState('All');
+
+useEffect(() => {
+  localStorage.setItem('formData', JSON.stringify(formData));
+}, [formData]);
+
+useEffect(() => {
+  localStorage.setItem('rows', JSON.stringify(rows));
+}, [rows]);
+
+useEffect(() => {
+  localStorage.setItem('srNo', srNo.toString());
+}, [srNo]);
+
+const addEmployee = () => {
+  const newEmployee = {
+    id: srNo,
+    name: `Employee ${srNo}`,
+  };
+  setRows([...rows, newEmployee]);
+  setSrNo(srNo + 1);
+};
+
+const handleChange = (e) => {
+  const { name, value } = e.target;
+  setFormData((prevData) => ({
+    ...prevData,
+    [name]: value,
+  }));
+};
+
+const handleSubmit = (e) => {
+  e.preventDefault();
+
+  if (editIndex !== null) {
+    setRows((prevRows) => {
+      const updatedRows = [...prevRows];
+      updatedRows[editIndex] = formData;
+      return updatedRows;
+    });
+    setEditIndex(null);
+  } else {
+    setRows((prevRows) => [...prevRows, formData]);
+  }
+  setFormData({
+    EntryDate: "",
+    Estimate: "",
+    Customer: "",
+    Description: "",
+    Total: "",
+    EstimateDate: "",
+    DueDate: "",
+    status: "", 
   });
 
-  const [isFormVisible, setFormVisible] = useState(false);
-  const [editIndex, setEditIndex] = useState(null);
-  const [rfqNo, setRfqNo] = useState(1); // Changed from srNo to rfqNo
-  const [rows, setRows] = useState([]);
-  const [searchTerm, setSearchTerm] = useState("");
-  const [filter, setFilter] = useState("All");
+  setFormVisible(false);
+};
 
-  useEffect(() => {
-    const savedData = JSON.parse(localStorage.getItem("formData"));
-    if (savedData) {
-      setFormData(savedData);
-    }
-    
-    const savedRows = JSON.parse(localStorage.getItem("rows"));
-    if (savedRows) {
-      setRows(savedRows);
-    }
-  }, []);
+const handleDelete = (index) => {
+  setRows((prevRows) => prevRows.filter((_, i) => i !== index));
+};
 
-  useEffect(() => {
-    localStorage.setItem("formData", JSON.stringify(formData));
-  }, [formData]);
+const handleEdit = (index) => {
+  const employeeToEdit = rows[index];
+  setFormData(employeeToEdit);
+  setEditIndex(index);
+  setFormVisible(true);
+};
 
-  useEffect(() => {
-    localStorage.setItem("rows", JSON.stringify(rows));
-  }, [rows]);
+const toggleFormVisibility = () => {
+  setFormVisible((prevVisibility) => !prevVisibility);
+};
 
-  useEffect(() => {
-    const processRowData = (rowData) => {
-      // Logic to process the received rowData
-      console.log("Received Row Data:", rowData);
-      // For example, update the form data with the received data
-      setFormData({
-        ...formData,
-        EntryDate: rowData.EntryDate,
-        Estimate: rowData.Estimate,
-        Customer: rowData.Customer,
-        Description: rowData.Description,
-        Total: rowData.Total,
-        EstimateDate: rowData.EstimateDate,
-        // Set other properties accordingly
-      });
-    };
-  
-    if (location.state && location.state.leadData) {
-      const rowData = location.state.leadData;
-      processRowData(rowData);
-    }
-  }, [location.state]);
-  
-  
+const handleRefresh = () => {
+  window.location.reload();
+};
 
-  const addEstimate = () => {
-    const dueDate = new Date();
-    dueDate.setDate(dueDate.getDate() + 14); // Due date is 14 days from now
+const handleFilter = () => {
+  if (filter === 'Active') {
+    setRows((prevRows) => prevRows.filter((row) => row.status === 'Active'));
+  } else if (filter === 'Inactive') {
+    setRows((prevRows) => prevRows.filter((row) => row.status === 'Inactive'));
+  }
+};
 
-    const newEstimate = {
-      rfqNo,
-      EntryDate: formData.EntryDate,
-      Estimate: formData.Estimate,
-      Customer: formData.Customer,
-      Description: formData.Description,
-      Total: formData.Total,
-      EstimateDate: formData.EstimateDate,
-      DueDate: dueDate.toLocaleDateString("en-US"), // Format due date
-      status: formData.status,
-    };
-
-    setRows([...rows, newEstimate]);
-    setRfqNo(rfqNo + 1);
-  };
-
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setFormData((prevData) => ({
-      ...prevData,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = (e) => {
-    e.preventDefault();
-
-    if (editIndex !== null) {
-      setRows((prevRows) => {
-        const updatedRows = [...prevRows];
-        updatedRows[editIndex] = formData;
-        return updatedRows;
-      });
-      setEditIndex(null);
-    } else {
-      addEstimate();
-    }
-
-    setFormData({
-      EntryDate: "",
-      Estimate: "",
-      Customer: "",
-      Description: "",
-      Total: "",
-      EstimateDate: "",
-      DueDate: "",
-      status: "Active", // Reset status to default after submission
-    });
-
-    setFormVisible(false);
-  };
-
-  const handleDelete = (index) => {
-    setRows((prevRows) => prevRows.filter((_, i) => i !== index));
-  };
-
-  const handleEdit = (index) => {
-    const estimateToEdit = rows[index];
-    setFormData(estimateToEdit);
-    setEditIndex(index);
-    setFormVisible(true);
-  };
-
-  const toggleFormVisibility = () => {
-    setFormVisible((prevVisibility) => !prevVisibility);
-  };
-
-  const handleRefresh = () => {
-    window.location.reload();
-  };
-
-  const handleFilter = () => {
-    // Filtering is done on the client-side, no need to modify rows state
-  };
-
-  const handleExport = () => {
-    const doc = new jsPDF();
-    rows.forEach((row, index) => {
-      const yPos = 10 + index * 10;
-      doc.text(`${row.Customer} - ${row.status}`, 10, yPos);
-    });
-    doc.save("estimate_table.pdf");
-  };
-
-  const handleSearch = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
-  const filteredRows = rows.filter((row) => {
-    if (filter === "All") {
-      return (
-        row.Customer &&
-        row.Customer.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    } else {
-      return (
-        row.status &&
-        row.status === filter &&
-        row.Customer &&
-        row.Customer.toLowerCase().includes(searchTerm.toLowerCase())
-      );
-    }
+const handleExport = () => {
+  const doc = new jsPDF();
+  rows.forEach((row, index) => {
+    const yPos = 10 + (index * 10);
+    doc.text(`${row.name} - ${row.code}`, 10, yPos);
   });
+  doc.save('employee_table.pdf');
+};
 
-  
+const handleSearch = (e) => {
+  setSearchTerm(e.target.value);
+};
+
+const filteredRows = rows.filter((row) => {
+  const Branchname = row.BranchName ? row.BranchName.toLowerCase() : '';
+  const status = row.status ? row.status.toLowerCase() : '';
+
+  if (filter === 'All') {
+    return name.includes(searchTerm.toLowerCase());
+  } else {
+    return (
+      status === filter.toLowerCase() &&
+      name.includes(searchTerm.toLowerCase())
+    );
+  }
+});
 
   return (
     <div className="absolute shadow-xl w-[82vw] right-[1vw] rounded-md top-[4vw] h-[40vw]">
@@ -226,7 +191,7 @@ const Estimates = () => {
               <th className="border p-[0.5vw] text-[1vw]">RFQ No</th>
               <th className="border p-[0.5vw] text-[1vw]">Entry Date</th>
               <th className="border p-[0.5vw] text-[1vw]">Estimate #</th>
-              <th className="border p-[0.5vw]">Customer/Lead</th>
+              <th className="border p-[0.5vw] text-[1vw]">Customer/Lead</th>
               <th className="border p-[0.5vw] text-[1vw]">Description</th>
               <th className="border p-[0.5vw] text-[1vw]">Total</th>
               <th className="border p-[0.5vw] text-[1vw]">Estimate Date</th>
@@ -236,17 +201,17 @@ const Estimates = () => {
             </tr>
           </thead>
           <tbody className="rounded-lg bg-gray-100 w-[80vw] text-center">
-            {filteredRows.map((row, index) => (
+          {filteredRows.map((row, index) => (
               <tr key={index}>
-                <td>{row.rfqNo}</td>
-                <td>{row.EntryDate}</td>
-                <td>{row.Estimate}</td>
-                <td>{row.Customer}</td>
-                <td>{row.Description}</td>
-                <td>{row.Total}</td>
-                <td>{row.EstimateDate}</td>
-                <td>{row.DueDate}</td>
-                <td>{row.status}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{index + 1}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.EntryDate}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Estimate}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Customer}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Description}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.Total}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.EstimateDate}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.DueDate}</td>
+                <td className="text-[0.8vw] p-[0.4vw]">{row.status}</td>
                 <td className="p-[0.1vw]">
                   <button
                     className="hover:bg-blue-500 p-2 rounded-full mb-2 mr-[0.6vw]"
@@ -363,6 +328,20 @@ const Estimates = () => {
                 id="EstimateDate"
                 name="EstimateDate"
                 value={formData.EstimateDate}
+                onChange={handleChange}
+                className="border p-2 rounded w-full"
+                placeholder="MM/DD/YYYY"
+              />
+            </div>
+            <div className="mb-[0.3vw]">
+              <label htmlFor="DueDate" className="block mb-1">
+              Due Date:
+              </label>
+              <input
+                type="date"
+                id="DueDate"
+                name="DueDate"
+                value={formData.DueDate}
                 onChange={handleChange}
                 className="border p-2 rounded w-full"
                 placeholder="MM/DD/YYYY"
